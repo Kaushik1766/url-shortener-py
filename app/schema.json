@@ -1,0 +1,41 @@
+{
+    "UserLookup":{
+        "PK":"USER#<email",
+        "SK": "USER#<user_id>"
+    },
+    "User":{
+        "PK": "USER#<user_id>",
+        "SK": "PROFILE",
+        "Email": "<email>",
+        "Username": "<username>",
+        "PasswordHash": "<password_hash>",
+        "CreatedAt": "<timestamp>",
+    },
+    "OwnerMapping":{
+        "PK": "USER#<user_id>",
+        "SK": "SHORTURL#<short_code>"
+    },
+    "ShortUrl":{
+        "PK": "SHORTURL#<short_code(prefix with tier st for standard or pr for premium)>",        
+        "SK": "METADATA",
+        "URL": "<original_url>",
+        "OwnerID": "<user_id>",
+        "CreatedAt": "<timestamp>",
+        "Expiration": "<timestamp>"
+    },
+    "DailyAccessMetrics":{
+        "PK": "SHORTURL#<short_code>",
+        "SK": "DAY#<YYYY-MM-DD>",
+        "TotalHits": <number>,
+        "ByCountry": {
+            "<country_code>": <number>
+        },
+        "ByDeviceType": {
+            "<device_type>": <number>
+        },
+        "ByReferrer": {
+            "<referrer_url>": <number>
+        },
+        "TTL": "<timestamp>"
+    }
+}
