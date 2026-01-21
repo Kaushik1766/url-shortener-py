@@ -1,0 +1,89 @@
+{
+	"Name": "My Estimate",
+	"Total Cost": {
+		"monthly": "15.72",
+		"upfront": "0.00",
+		"12 months": "188.64"
+	},
+	"Metadata": {
+		"Currency": "USD",
+		"Locale": "en_US",
+		"Created On": "21/1/2026",
+		"Legal Disclaimer": "AWS Pricing Calculator provides only an estimate of your AWS fees and doesn't include any taxes that might apply. Your actual fees depend on a variety of factors, including your actual usage of AWS services.",
+		"Share Url": "https://calculator.aws/#/estimate?id=b6747e854156ccb825179fa5870d03ac61394f0e"
+	},
+	"Groups": {
+		"Services": [
+			{
+				"Service Name": "AWS Lambda",
+				"Region": "Asia Pacific (Mumbai)",
+				"Status": "",
+				"Service Cost": {
+					"monthly": "0.00",
+					"upfront": "0.00",
+					"12 months": "0.00"
+				},
+				"Properties": {
+					"Architecture": "Arm",
+					"Invoke Mode": "Buffered",
+					"Amount of ephemeral storage allocated": "512 MB",
+					"Number of requests": "30000 per month",
+					"Concurrency": "2"
+				}
+			},
+			{
+				"Service Name": "DynamoDB on-demand capacity",
+				"Region": "Asia Pacific (Mumbai)",
+				"Status": "",
+				"Service Cost": {
+					"monthly": "4.01",
+					"upfront": "0.00",
+					"12 months": "48.12"
+				},
+				"Properties": {
+					"Table class": "Standard",
+					"Average item size (all attributes)": "2 KB",
+					"Data storage size": "1 GB"
+				}
+			},
+			{
+				"Service Name": "Amazon ElastiCache",
+				"Region": "Asia Pacific (Mumbai)",
+				"Status": "",
+				"Service Cost": {
+					"monthly": "11.68",
+					"upfront": "0.00",
+					"12 months": "140.16"
+				},
+				"Properties": {
+					"Engine": "Redis OSS",
+					"Nodes": "1",
+					"Instance type": "cache.t4g.micro",
+					"Utilization (On-Demand only)": "100 %Utilized/Month",
+					"Cache Engine": "Memcached",
+					"Cache Node Type": "Standard",
+					"Pricing strategy": "OnDemand"
+				}
+			},
+			{
+				"Service Name": "Amazon API Gateway",
+				"Region": "Asia Pacific (Mumbai)",
+				"Status": "",
+				"Service Cost": {
+					"monthly": "0.03",
+					"upfront": "0.00",
+					"12 months": "0.38"
+				},
+				"Properties": {
+					"HTTP API requests units": "thousands",
+					"Average size of each request": "34 KB",
+					"REST API request units": "millions",
+					"Cache memory size (GB)": "None",
+					"WebSocket message units": "thousands",
+					"Average message size": "32 KB",
+					"Requests": "30 per month"
+				}
+			}
+		]
+	}
+}
