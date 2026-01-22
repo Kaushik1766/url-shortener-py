@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
+    <data-source source="LOCAL" name="0@localhost" uuid="6d7fcbb2-d9c5-4a4e-aeca-16b26946c1a1">
+      <driver-ref>redis</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>jdbc.RedisDriver</jdbc-driver>
+      <jdbc-url>jdbc:redis://localhost:6379/0</jdbc-url>
+      <working-dir>$ProjectFileDir$</working-dir>
+      <driver-properties>
+        <property name="verifyConnectionMode" value="false" />
+      </driver-properties>
+    </data-source>
+    <data-source source="LOCAL" name="Amazon DynamoDB" uuid="26235883-edd6-4120-9ba0-cace5c97af66">
+      <driver-ref>dynamo</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.jetbrains.DynamoDriver</jdbc-driver>
+      <jdbc-url>jdbc:dynamodb://dynamodb.ap-south-1.amazonaws.com/url-shortener-test?region=ap-south-1</jdbc-url>
+      <jdbc-additional-properties>
+        <property name="Profile" value="default" />
+      </jdbc-additional-properties>
+      <working-dir>$ProjectFileDir$</working-dir>
+    </data-source>
+  </component>
+</project>

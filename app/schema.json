@@ -1,15 +1,16 @@
 {
     "UserLookup":{
         "PK":"USER#<email",
-        "SK": "USER#<user_id>"
+        "SK": "ID#<user_id>"
     },
     "User":{
         "PK": "USER#<user_id>",
         "SK": "PROFILE",
+        "ID": "<uuid>",
         "Email": "<email>",
         "Username": "<username>",
         "PasswordHash": "<password_hash>",
-        "CreatedAt": "<timestamp>",
+        "CreatedAt": "<timestamp>"
     },
     "OwnerMapping":{
         "PK": "USER#<user_id>",
@@ -17,11 +18,11 @@
     },
     "ShortUrl":{
         "PK": "SHORTURL#<short_code(prefix with tier st for standard or pr for premium)>",        
-        "SK": "METADATA",
+        "SK": "DETAILS",
+        "ID": "<uuid>",
         "URL": "<original_url>",
         "OwnerID": "<user_id>",
-        "CreatedAt": "<timestamp>",
-        "Expiration": "<timestamp>"
+        "CreatedAt": "<timestamp>"
     },
     "DailyAccessMetrics":{
         "PK": "SHORTURL#<short_code>",

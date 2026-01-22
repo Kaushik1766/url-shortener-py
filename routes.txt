@@ -4,6 +4,7 @@ POST /auth/login
 POST /create
 
 GET /{short_url} (this would have rate limited access)
+GET /urls (list all urls for the user)
 GET /{short_url}/metrics (only accessible to the creator/admin)
 
 Access patterns
