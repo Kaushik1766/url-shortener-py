@@ -18,7 +18,7 @@
     },
     "ShortUrl":{
         "PK": "SHORTURL#<short_code(prefix with tier st for standard or pr for premium)>",        
-        "SK": "METADATA",
+        "SK": "DETAILS",
         "ID": "<uuid>",
         "URL": "<original_url>",
         "OwnerID": "<user_id>",
