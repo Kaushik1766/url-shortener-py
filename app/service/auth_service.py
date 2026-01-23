@@ -4,6 +4,7 @@ import jwt
 from app.constants import JWT_ALGORITHM, JWT_SECRET
 from app.dtos.auth import LoginRequestDTO, JwtDTO, SignupRequestDTO
 from app.errors.web_errors import WebException, ErrorCodes
+from app.models.subscriptions import Subscription
 from app.repository.user_repo import UserRepository
 from bcrypt import checkpw
 from datetime import datetime, timedelta, timezone
@@ -32,7 +33,8 @@ class AuthService:
                 email=user.email,
                 name=user.name,
                 iat=int(datetime.now(tz=timezone.utc).timestamp()),
-                exp=int(datetime.now(tz=timezone.utc).timestamp() + timedelta(minutes=30).total_seconds())
+                exp=int(datetime.now(tz=timezone.utc).timestamp() + timedelta(minutes=30).total_seconds()),
+                subscription=Subscription.STANDARD
             ).model_dump(),
             algorithm=JWT_ALGORITHM,
             key=JWT_SECRET

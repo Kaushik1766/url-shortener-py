@@ -4,19 +4,16 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6d791707-9f4e-4787-a415-697be3344873" name="Changes" comment="shorturl repo">
-      <change afterPath="$PROJECT_DIR$/app/models/subscriptions.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/utils/base62.py" afterDir="false" />
+    <list default="true" id="6d791707-9f4e-4787-a415-697be3344873" name="Changes" comment="shorturl service">
+      <change afterPath="$PROJECT_DIR$/app/lambdas/auth.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/service/timer.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/constants.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/constants.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/dtos/auth.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/dtos/auth.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/models/short_url.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/models/short_url.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/repository/short_url_repo.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/repository/short_url_repo.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/schema.json" beforeDir="false" afterPath="$PROJECT_DIR$/app/schema.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/service/auth_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/service/auth_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/service/rate_limiter.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/service/rate_limiter.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/service/url_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/service/url_service.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pyproject.toml" beforeDir="false" afterPath="$PROJECT_DIR$/pyproject.toml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/uv.lock" beforeDir="false" afterPath="$PROJECT_DIR$/uv.lock" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -141,7 +138,7 @@
       <workItem from="1769101231970" duration="2181000" />
       <workItem from="1769106712147" duration="188000" />
       <workItem from="1769106915027" duration="875000" />
-      <workItem from="1769151960343" duration="6919000" />
+      <workItem from="1769151960343" duration="12900000" />
     </task>
     <task id="LOCAL-00001" summary=".">
       <option name="closed" value="true" />
@@ -151,7 +148,15 @@
       <option name="project" value="LOCAL" />
       <updated>1769100856837</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="shorturl service">
+      <option name="closed" value="true" />
+      <created>1769164459065</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1769164459065</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -159,7 +164,8 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="." />
-    <option name="LAST_COMMIT_MESSAGE" value="." />
+    <MESSAGE value="shorturl service" />
+    <option name="LAST_COMMIT_MESSAGE" value="shorturl service" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/url_shortener_py$main.coverage" NAME="main Coverage Results" MODIFIED="1769160086141" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />

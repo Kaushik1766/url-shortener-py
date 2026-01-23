@@ -72,7 +72,7 @@ class ShortURLRepository:
 
     def get_counter(self) -> int:
         """
-        increments dynamo counter by 2 (to always get odd values) and returns it (db should only be used as a failover)
+        increments dynamo counter by 1 and returns it
         """
         res = self.table.update_item(
             Key={
@@ -81,7 +81,7 @@ class ShortURLRepository:
             },
             UpdateExpression="SET CurrentCount = CurrentCount + :inc",
             ExpressionAttributeValues={
-                ":inc": 2,
+                ":inc": 1,
             },
             ReturnValues='UPDATED_NEW',
         )
