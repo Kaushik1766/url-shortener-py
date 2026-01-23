@@ -5,15 +5,16 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6d791707-9f4e-4787-a415-697be3344873" name="Changes" comment="shorturl service">
-      <change afterPath="$PROJECT_DIR$/app/lambdas/auth.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/service/timer.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/dtos/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/errors/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/lambdas/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/models/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/repository/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/service/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/utils/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/deployment/template.yaml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/constants.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/constants.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/repository/short_url_repo.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/repository/short_url_repo.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/service/auth_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/service/auth_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/service/rate_limiter.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/service/rate_limiter.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/service/url_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/service/url_service.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/lambdas/auth.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/lambdas/auth.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -41,12 +42,12 @@
     &quot;assignee&quot;: &quot;Kaushik1766&quot;
   }
 }</component>
-  <component name="GithubPullRequestsUISettings"><![CDATA[{
-  "selectedUrlAndAccountId": {
-    "url": "https://github.com/Kaushik1766/url-shortener-py.git",
-    "accountId": "65085b62-c1c7-4bc5-b963-601903961c79"
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/Kaushik1766/url-shortener-py.git&quot;,
+    &quot;accountId&quot;: &quot;65085b62-c1c7-4bc5-b963-601903961c79&quot;
   }
-}]]></component>
+}</component>
   <component name="McpProjectServerCommands">
     <commands />
     <urls />
@@ -76,7 +77,7 @@
     "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
     "git-widget-placeholder": "main",
     "junie.onboarding.icon.badge.shown": "true",
-    "last_opened_file_path": "/mnt/windows/python/url-shortener-py",
+    "last_opened_file_path": "/mnt/windows/python/url-shortener-py/app/utils",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -87,6 +88,15 @@
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/app/utils" />
+      <recent name="$PROJECT_DIR$/app/service" />
+      <recent name="$PROJECT_DIR$/app/repository" />
+      <recent name="$PROJECT_DIR$/app/models" />
+      <recent name="$PROJECT_DIR$/app/dtos" />
+    </key>
+  </component>
   <component name="RunManager">
     <configuration name="main" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="url-shortener-py" />
