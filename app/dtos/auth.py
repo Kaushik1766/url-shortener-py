@@ -1,5 +1,7 @@
 from pydantic import BaseModel, EmailStr, Field
 
+from app.models.subscriptions import Subscription
+
 
 class LoginRequestDTO(BaseModel):
     email: EmailStr
@@ -16,3 +18,4 @@ class JwtDTO(BaseModel):
     name: str
     iat: int
     exp: int
+    subscription: Subscription

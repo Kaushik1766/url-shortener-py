@@ -2,9 +2,12 @@ from typing import List
 
 from boto3.dynamodb.conditions import Key
 from mypy_boto3_dynamodb.service_resource import DynamoDBServiceResource
+from mypy_boto3_dynamodb.type_defs import TransactWriteItemTypeDef, PutItemInputTypeDef
 
 from app.constants import DYNAMO_DB_TABLE_NAME
 from app.errors.web_errors import WebException, ErrorCodes
+from app.models import short_url
+from app.models.short_url import ShortUrl
 
 
 class ShortURLRepository:
@@ -38,3 +41,50 @@ class ShortURLRepository:
             str(item['SK']).split('#')[-1]
             for item in url_items
         ]
+
+    def add_url(self, short_url: ShortUrl):
+        put_short_url: TransactWriteItemTypeDef = {
+            "Put": PutItemInputTypeDef(
+                TableName=DYNAMO_DB_TABLE_NAME,
+                Item={
+                    "PK": f"SHORTURL#{short_url.short_url}",
+                    "SK": f"DETAILS",
+                    **short_url.model_dump(by_alias=True)
+                },
+                ConditionExpression="attribute_not_exists(PK) and attribute_not_exists(SK)"
+            )
+        }
+
+        put_owner_mapping: TransactWriteItemTypeDef = {
+            "Put": PutItemInputTypeDef(
+                TableName=DYNAMO_DB_TABLE_NAME,
+                Item={
+                    "PK": f"USER#{short_url.owner_id}",
+                    "SK": f"SHORTURL#{short_url.short_url}",
+                },
+                ConditionExpression="attribute_not_exists(PK) and attribute_not_exists(SK)"
+            ),
+        }
+
+        self.db.meta.client.transact_write_items(
+            TransactItems=[put_short_url, put_owner_mapping],
+        )
+
+    def get_counter(self) -> int:
+        """
+        increments dynamo counter by 2 (to always get odd values) and returns it (db should only be used as a failover)
+        """
+        res = self.table.update_item(
+            Key={
+                "PK": "SHORTURL",
+                "SK": "COUNTER"
+            },
+            UpdateExpression="SET CurrentCount = CurrentCount + :inc",
+            ExpressionAttributeValues={
+                ":inc": 2,
+            },
+            ReturnValues='UPDATED_NEW',
+        )
+
+        count = res.get('Attributes').get('CurrentCount')
+        return count

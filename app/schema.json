@@ -20,6 +20,7 @@
         "PK": "SHORTURL#<short_code(prefix with tier st for standard or pr for premium)>",        
         "SK": "DETAILS",
         "ID": "<uuid>",
+        "ShortURL": "<short_url>",
         "URL": "<original_url>",
         "OwnerID": "<user_id>",
         "CreatedAt": "<timestamp>"
@@ -38,5 +39,10 @@
             "<referrer_url>": <number>
         },
         "TTL": "<timestamp>"
+    },
+    "Counter": {
+        "PK": "SHORTURL",
+        "SK": "COUNTER",
+        "CurrentCount": <odd_count>
     }
 }
