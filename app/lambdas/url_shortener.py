@@ -18,7 +18,7 @@ from app.service.url_service import ShortURLService
 db = boto3.resource('dynamodb')
 url_repo = ShortURLRepository(db)
 redis_endpoint = os.environ['REDIS_ENDPOINT']
-redis_client = Redis(host=redis_endpoint, port=6379, db=0)
+redis_client = Redis(host=redis_endpoint, port=6379, db=0, decode_responses=True)
 rate_limiter = RateLimitingService(redis_client)
 url_service = ShortURLService(url_repo, redis_client)
 
@@ -52,6 +52,6 @@ def get_url_handler(event:events.APIGatewayProxyEventV2, ctx: context.Context):
 
     return APIGatewayProxyResponseV2(
         statusCode=302,
-        headers={'Location': url},
+        headers={'Location': f"https://{url}" if not url.startswith("http") else url}
     )
 

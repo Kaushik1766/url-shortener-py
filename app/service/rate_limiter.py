@@ -1,3 +1,5 @@
+from app.errors.web_errors import ErrorCodes
+from app.errors.web_errors import WebException
 import datetime
 from functools import wraps
 
@@ -20,12 +22,20 @@ class RateLimitingService:
         :return: bool
         """
         if not (short_url.startswith(Subscription.STANDARD) or short_url.startswith(Subscription.PREMIUM)):
-            return False
+            raise WebException(
+                status_code=404,
+                message="Not Found",
+                error_code=ErrorCodes.SHORTURL_NOT_FOUND
+            )
 
         trimmed_short_url = short_url[3:]
         decoded_short_url = hashids.Hashids(salt=HASHID_SALT, min_length=7).decode(trimmed_short_url)
         if len(decoded_short_url) == 0:
-            return False
+            raise WebException(
+                status_code=404,
+                message="Not Found",
+                error_code=ErrorCodes.SHORTURL_NOT_FOUND
+            )
 
         rate = STD_RATE_LIMIT if trimmed_short_url.startswith(Subscription.STANDARD) else PRO_RATE_LIMIT
 
