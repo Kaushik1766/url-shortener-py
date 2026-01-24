@@ -1,3 +1,5 @@
+from app.service.metrics import MetricsService
+from app.service.subscription_service import SubscriptionService
 from app.service.rate_limiter import RateLimitingService
 from app.errors.web_errors import exception_boundary
 import json
@@ -15,12 +17,17 @@ from aws_lambda_typing import events, context
 
 from app.service.url_service import ShortURLService
 
+redis_endpoint = os.environ.get('REDIS_ENDPOINT',"localhost")
+
 db = boto3.resource('dynamodb')
-url_repo = ShortURLRepository(db)
-redis_endpoint = os.environ['REDIS_ENDPOINT']
 redis_client = Redis(host=redis_endpoint, port=6379, db=0, ssl=True, decode_responses=True)
+sqs_client = boto3.client('sqs')
+
+url_repo = ShortURLRepository(db)
+
 rate_limiter = RateLimitingService(redis_client)
 url_service = ShortURLService(url_repo, redis_client)
+metrics_service = MetricsService(sqs_client)
 
 @exception_boundary
 @requires_auth
@@ -38,10 +45,9 @@ def create_shorturl_handler(event:events.APIGatewayProxyEventV2, ctx: context.Co
         })
     )
 
-
-
 @exception_boundary
 @rate_limiter.rate_limit
+@metrics_service.track_metrics
 def get_url_handler(event:events.APIGatewayProxyEventV2, ctx: context.Context):
     path_params = event['pathParameters']
 
@@ -55,3 +61,11 @@ def get_url_handler(event:events.APIGatewayProxyEventV2, ctx: context.Context):
         headers={'Location': f"https://{url}" if not url.startswith("http") else url}
     )
 
+@exception_boundary
+@requires_auth
+def get_user_short_urls(event: events.APIGatewayProxyEventV2, ctx: context.Context, user: JwtDTO)->APIGatewayProxyResponseV2:
+    urls = url_service.get_urls_by_user(user.id)
+    return APIGatewayProxyResponseV2(
+        statusCode=200,
+        body=json.dumps(urls)
+    )

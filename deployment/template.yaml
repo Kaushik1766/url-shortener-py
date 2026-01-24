@@ -172,6 +172,13 @@ Resources:
         - !Ref Subnet1
         - !Ref Subnet2
 
+  MetricsSQS:
+    Type: AWS::SQS::Queue
+    Properties:
+      VisibilityTimeout: 200
+      QueueName: !Sub ${AWS::StackName}-metrics-sqs
+
+
   CreateShortUrl:
     Type: AWS::Serverless::Function
     Properties:
@@ -184,6 +191,32 @@ Resources:
             RestApiId: !Ref ApiGateway
             Method: POST
             Path: /shorturls
+
+  GetUrlsByUser:
+    Type: AWS::Serverless::Function
+    Properties:
+      Role: !GetAtt LambdaRole.Arn
+      Handler: app.lambdas.url_shortener.get_user_short_urls
+      Events:
+        ApiEvent:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ApiGateway
+            Method: GET
+            Path: /shorturls
+
+  UpgradeSubscription:
+    Type: AWS::Serverless::Function
+    Properties:
+      Role: !GetAtt LambdaRole.Arn
+      Handler: app.lambdas.subscription.upgrade_subscription
+      Events:
+        ApiEvent:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ApiGateway
+            Method: PATCH
+            Path: /upgrade
 
   VpcLambdaRole:
     Type: AWS::IAM::Role
@@ -223,6 +256,7 @@ Resources:
       Environment:
         Variables:
           REDIS_ENDPOINT: !GetAtt ValkeyCacheServerless.Endpoint.Address
+          SQS_URL: !Ref MetricsSQS
       Events:
         ApiEvent:
           Type: Api

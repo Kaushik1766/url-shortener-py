@@ -18,7 +18,6 @@ class AuthService:
     def __init__(self, user_repository: UserRepository):
         self.user_repository = user_repository
 
-    @log_performance
     def login(self, login_req: LoginRequestDTO):
         user = self.user_repository.get_user_by_email(str(login_req.email))
 
@@ -36,7 +35,7 @@ class AuthService:
                 name=user.username,
                 iat=int(datetime.now(tz=timezone.utc).timestamp()),
                 exp=int(datetime.now(tz=timezone.utc).timestamp() + timedelta(minutes=30).total_seconds()),
-                subscription=Subscription.STANDARD
+                subscription=user.subscription,
             ).model_dump(),
             algorithm=JWT_ALGORITHM,
             key=JWT_SECRET
@@ -44,7 +43,6 @@ class AuthService:
 
         return token
 
-    @log_performance
     def signup(self, signup_req: SignupRequestDTO):
         password_hash = bcrypt.hashpw(signup_req.password.encode('utf-8'), bcrypt.gensalt(12)).decode('utf-8')
 

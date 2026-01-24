@@ -46,3 +46,6 @@ class ShortURLService:
             self.redis_client.set(f"shorturl:{shortened_url}", orig_url, ex=600)
 
         return str(orig_url)
+
+    def get_urls_by_user(self, user_id: str) -> list[str]:
+        return self.url_repo.get_urls_by_user_id(user_id)

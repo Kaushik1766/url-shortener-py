@@ -1,3 +1,4 @@
+from app.models.subscriptions import Subscription
 from app.utils.timer import log_performance
 from typing import cast
 from mypy_boto3_dynamodb.service_resource import DynamoDBServiceResource
@@ -78,4 +79,16 @@ class UserRepository:
 
         self.db.meta.client.transact_write_items(
             TransactItems=[put_user, put_user_lookup],
+        )
+
+    def set_user_subscription(self, user_id: str, subscription: Subscription):
+        self.table.update_item(
+            Key={
+                "PK":f"USER#{id}",
+                "SK":"PROFILE"
+            },
+            UpdateExpression="SET Subscription = :subscription",
+            ExpressionAttributeValues={
+                ":subscription": subscription.value,
+            }
         )
