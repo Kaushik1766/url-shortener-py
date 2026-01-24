@@ -27,13 +27,15 @@ class RateLimitingService:
         if len(decoded_short_url) == 0:
             return False
 
-        rate = STD_RATE_LIMIT if decoded_short_url.startswith(Subscription.STANDARD) else PRO_RATE_LIMIT
+        rate = STD_RATE_LIMIT if trimmed_short_url.startswith(Subscription.STANDARD) else PRO_RATE_LIMIT
 
         current_time = int(datetime.datetime.now(datetime.timezone.utc).timestamp())
         window_start = current_time - (current_time%60)
         key = f"rl:{short_url}:{window_start}"
-        val = self.redis_client.incr(key)
+        updated_val = str(self.redis_client.incr(key))
+        print(updated_val)
 
+        val = int(updated_val)
         if val == 1:
             self.redis_client.expire(key, 60)
 

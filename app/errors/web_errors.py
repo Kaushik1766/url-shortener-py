@@ -1,5 +1,5 @@
-#user errors
 from pydantic import ValidationError
+import traceback
 import json
 from typing import Callable
 from functools import wraps
@@ -15,6 +15,7 @@ class ErrorCodes(str,Enum):
     INVALID_CREDENTIALS = 1002
     USER_NOT_FOUND = 1003
     UNEXPECTED_ERROR = 1004
+    UNAUTHORIZED = 1005
 
     #shorturl errors
     SHORTURL_NOT_FOUND = 2001
@@ -53,7 +54,8 @@ def exception_boundary(func: Callable[[events.APIGatewayProxyEventV2, context.Co
                     "code": ErrorCodes.VALIDATION_ERROR,
                 })
             )
-        except:
+        except Exception as e:
+            traceback.print_exc()
             return APIGatewayProxyResponseV2(
                 statusCode= 500,
                 body= json.dumps({

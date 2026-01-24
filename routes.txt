@@ -18,3 +18,7 @@ GET url by shorturl
 PUT metrics by shorturl
 GET metrics by shorturl
 
+#todos -
+analytics lambda, service, repo
+analytics sqs
+testing

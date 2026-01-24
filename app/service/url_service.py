@@ -39,10 +39,10 @@ class ShortURLService:
 
     @log_performance
     def get_original_url(self, shortened_url: str) -> str:
-        orig_url = str(self.redis_client.get(f"shorturl:{shortened_url}"))
+        orig_url = self.redis_client.get(f"shorturl:{shortened_url}")
         if not orig_url:
             # print("key not found in redis fetching from db")
             orig_url = self.url_repo.get_url(shortened_url)
             self.redis_client.set(f"shorturl:{shortened_url}", orig_url, ex=600)
 
-        return orig_url
+        return str(orig_url)

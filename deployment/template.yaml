@@ -13,11 +13,32 @@ Globals:
       - arm64
     MemorySize: 1024
     Runtime: python3.12
-    Timeout: 900
+    Timeout: 60
     CodeUri: ../
 
 
 Resources:
+  Vpc:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: 10.0.0.0/21
+      EnableDnsSupport: true
+      EnableDnsHostnames: true
+
+  Subnet1:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref Vpc
+      CidrBlock: 10.0.0.0/24
+      AvailabilityZone: "ap-south-1a"
+
+  Subnet2:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref Vpc
+      CidrBlock: 10.0.1.0/24
+      AvailabilityZone: "ap-south-1b"
+
   LambdaRole:
     Type: AWS::IAM::Role
     Properties:
@@ -47,12 +68,12 @@ Resources:
       Name: !Sub ${AWS::StackName}-api-gateway
       StageName: dev
 
-
   Signup:
     Type: AWS::Serverless::Function
     Properties:
       Role: !GetAtt LambdaRole.Arn
       Handler: app.lambdas.auth.signup_handler
+      MemorySize: 2048
       Events:
         ApiEvent:
           Type: Api
@@ -66,6 +87,7 @@ Resources:
     Properties:
       Role: !GetAtt LambdaRole.Arn
       Handler: app.lambdas.auth.login_handler
+      MemorySize: 2048
       Events:
         ApiEvent:
           Type: Api
@@ -73,3 +95,101 @@ Resources:
             RestApiId: !Ref ApiGateway
             Method: POST
             Path: /auth/login
+
+  LambdaSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      VpcId: !Ref Vpc
+      GroupDescription: SG for lambda enis
+
+  CacheSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      VpcId: !Ref Vpc
+      GroupDescription: SG for allowing traffic from lambda sg
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 6379
+          ToPort: 6380
+          SourceSecurityGroupId: !Ref LambdaSecurityGroup
+
+  ValkeySubnetGroup:
+    Type: AWS::ElastiCache::SubnetGroup
+    Properties:
+      Description: subnets to place elasticache nodes
+      SubnetIds:
+        - !Ref Subnet1
+        - !Ref Subnet2
+
+  ValkeyCache:
+    Type: AWS::ElastiCache::ReplicationGroup
+    Properties:
+      CacheNodeType: cache.t4g.micro
+      Engine: valkey
+      ReplicationGroupDescription: valkey cache for rate limiting and storing hot shorturls
+      NumCacheClusters: 2
+      CacheSubnetGroupName: !Ref ValkeySubnetGroup
+      SecurityGroupIds:
+        - !Ref CacheSecurityGroup
+      AutomaticFailoverEnabled: true
+      TransitEncryptionEnabled: false
+      AtRestEncryptionEnabled: false
+
+  CreateShortUrl:
+    Type: AWS::Serverless::Function
+    Properties:
+      Role: !GetAtt LambdaRole.Arn
+      Handler: app.lambdas.url_shortener.create_shorturl_handler
+      Events:
+        ApiEvent:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ApiGateway
+            Method: POST
+            Path: /shorturls
+
+  VpcLambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: "sts:AssumeRole"
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
+      Policies:
+        - PolicyName: DynamoAccess
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action: "dynamodb:*"
+                Resource:
+                  - !Ref DynamoDBARN
+                  - !Sub "${DynamoDBARN}/index/*"
+
+  GetOriginalUrl:
+    Type: AWS::Serverless::Function
+    Properties:
+      Role: !GetAtt VpcLambdaRole.Arn
+      Handler: app.lambdas.url_shortener.get_url_handler
+      VpcConfig:
+        SecurityGroupIds:
+          - !Ref LambdaSecurityGroup
+        SubnetIds:
+          - !Ref Subnet1
+          - !Ref Subnet2
+      Environment:
+        Variables:
+          REDIS_ENDPOINT: !GetAtt ValkeyCache.PrimaryEndPoint.Address
+      Events:
+        ApiEvent:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ApiGateway
+            Method: GET
+            Path: /{short_url}
