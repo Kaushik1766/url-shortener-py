@@ -147,19 +147,30 @@ Resources:
         - !Ref Subnet1
         - !Ref Subnet2
 
-  ValkeyCache:
-    Type: AWS::ElastiCache::ReplicationGroup
+#  ValkeyCache:
+#    Type: AWS::ElastiCache::ReplicationGroup
+#    Properties:
+#      CacheNodeType: cache.t4g.micro
+#      Engine: valkey
+#      ReplicationGroupDescription: valkey cache for rate limiting and storing hot shorturls
+#      NumCacheClusters: 2
+#      CacheSubnetGroupName: !Ref ValkeySubnetGroup
+#      SecurityGroupIds:
+#        - !Ref CacheSecurityGroup
+#      AutomaticFailoverEnabled: true
+#      TransitEncryptionEnabled: false
+#      AtRestEncryptionEnabled: false
+
+  ValkeyCacheServerless:
+    Type: AWS::ElastiCache::ServerlessCache
     Properties:
-      CacheNodeType: cache.t4g.micro
+      ServerlessCacheName: !Sub url-shortener-serverless-cache
       Engine: valkey
-      ReplicationGroupDescription: valkey cache for rate limiting and storing hot shorturls
-      NumCacheClusters: 2
-      CacheSubnetGroupName: !Ref ValkeySubnetGroup
       SecurityGroupIds:
         - !Ref CacheSecurityGroup
-      AutomaticFailoverEnabled: true
-      TransitEncryptionEnabled: false
-      AtRestEncryptionEnabled: false
+      SubnetIds:
+        - !Ref Subnet1
+        - !Ref Subnet2
 
   CreateShortUrl:
     Type: AWS::Serverless::Function
@@ -211,7 +222,7 @@ Resources:
           - !Ref Subnet2
       Environment:
         Variables:
-          REDIS_ENDPOINT: !GetAtt ValkeyCache.PrimaryEndPoint.Address
+          REDIS_ENDPOINT: !GetAtt ValkeyCacheServerless.Endpoint.Address
       Events:
         ApiEvent:
           Type: Api

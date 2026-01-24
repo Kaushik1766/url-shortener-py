@@ -19,6 +19,7 @@ class ErrorCodes(str,Enum):
 
     #shorturl errors
     SHORTURL_NOT_FOUND = 2001
+    TOO_MANY_REQUESTS = 2002
 
     #miscellaneous errors
     INTERNAL_SERVER_ERROR = 3001

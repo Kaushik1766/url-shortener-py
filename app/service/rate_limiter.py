@@ -21,10 +21,10 @@ class RateLimitingService:
         :param short_url: shortened url
         :return: bool
         """
-        if not (short_url.startswith(Subscription.STANDARD) or short_url.startswith(Subscription.PREMIUM)):
+        if not (short_url.startswith(Subscription.STANDARD.value) or short_url.startswith(Subscription.PREMIUM.value)):
             raise WebException(
                 status_code=404,
-                message="Not Found",
+                message="Invalid short url",
                 error_code=ErrorCodes.SHORTURL_NOT_FOUND
             )
 
@@ -33,22 +33,22 @@ class RateLimitingService:
         if len(decoded_short_url) == 0:
             raise WebException(
                 status_code=404,
-                message="Not Found",
+                message="Invalid short url code",
                 error_code=ErrorCodes.SHORTURL_NOT_FOUND
             )
 
-        rate = STD_RATE_LIMIT if trimmed_short_url.startswith(Subscription.STANDARD) else PRO_RATE_LIMIT
+        rate = STD_RATE_LIMIT if short_url.startswith(Subscription.STANDARD.value) else PRO_RATE_LIMIT
 
         current_time = int(datetime.datetime.now(datetime.timezone.utc).timestamp())
         window_start = current_time - (current_time%60)
         key = f"rl:{short_url}:{window_start}"
         updated_val = str(self.redis_client.incr(key))
-        print(updated_val)
 
         val = int(updated_val)
         if val == 1:
             self.redis_client.expire(key, 60)
 
+        print(f"val: {val} rate: {rate}")
         return val<=rate
 
 
@@ -58,11 +58,18 @@ class RateLimitingService:
             event: events.APIGatewayProxyEventV2 = kwargs.get("event", args[0])
             url = event['pathParameters'].get('short_url')
 
+            if not url:
+                raise WebException(
+                    status_code=404,
+                    message="Not Found",
+                    error_code=ErrorCodes.SHORTURL_NOT_FOUND
+                )
             if self.check_access(url):
                 return func(*args, **kwargs)
             else:
-                return responses.APIGatewayProxyResponseV2(
-                    statusCode=429,
-                    body="Too many requests",
+                raise WebException(
+                    status_code=429,
+                    message="Too Many Requests, Please try again later",
+                    error_code=ErrorCodes.TOO_MANY_REQUESTS
                 )
         return wrapper
