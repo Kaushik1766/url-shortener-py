@@ -1,3 +1,4 @@
+from app.utils.timer import log_performance
 import bcrypt
 import jwt
 
@@ -17,10 +18,11 @@ class AuthService:
     def __init__(self, user_repository: UserRepository):
         self.user_repository = user_repository
 
+    @log_performance
     def login(self, login_req: LoginRequestDTO):
         user = self.user_repository.get_user_by_email(str(login_req.email))
 
-        if not checkpw(login_req.password.encode('utf-8'), user.hashed_password.encode('utf-8')):
+        if not checkpw(login_req.password.encode('utf-8'), user.password.encode('utf-8')):
             raise WebException(
                 status_code=401,
                 message="Invalid credentials",
@@ -31,7 +33,7 @@ class AuthService:
             payload=JwtDTO(
                 id=user.id,
                 email=user.email,
-                name=user.name,
+                name=user.username,
                 iat=int(datetime.now(tz=timezone.utc).timestamp()),
                 exp=int(datetime.now(tz=timezone.utc).timestamp() + timedelta(minutes=30).total_seconds()),
                 subscription=Subscription.STANDARD
@@ -42,12 +44,13 @@ class AuthService:
 
         return token
 
+    @log_performance
     def signup(self, signup_req: SignupRequestDTO):
         password_hash = bcrypt.hashpw(signup_req.password.encode('utf-8'), bcrypt.gensalt(12)).decode('utf-8')
 
         self.user_repository.add_user(
             user= User(
-                Username=signup_req.username,
+                Username=signup_req.name,
                 Email=signup_req.email,
                 PasswordHash= password_hash,
                 ID=str(uuid4()),

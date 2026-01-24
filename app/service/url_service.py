@@ -2,14 +2,13 @@ import datetime
 from uuid import uuid4
 
 import hashids
-import redis.exceptions
 from redis import Redis
 
 from app.constants import HASHID_SALT
 from app.models.short_url import ShortUrl
 from app.models.subscriptions import Subscription
 from app.repository.short_url_repo import ShortURLRepository
-from app.service.timer import timer
+from app.utils.timer import log_performance
 
 
 class ShortURLService:
@@ -17,7 +16,7 @@ class ShortURLService:
         self.url_repo = url_repo
         self.redis_client = redis_client
 
-    @timer
+    @log_performance
     def create_short_url(self, url: str, user_id: str, subscription: Subscription) -> str:
         shortened_url = subscription
         count = self.url_repo.get_counter()
@@ -38,9 +37,9 @@ class ShortURLService:
 
         return shortened_url
 
-    @timer
+    @log_performance
     def get_original_url(self, shortened_url: str) -> str:
-        orig_url = self.redis_client.get(f"shorturl:{shortened_url}")
+        orig_url = str(self.redis_client.get(f"shorturl:{shortened_url}"))
         if not orig_url:
             # print("key not found in redis fetching from db")
             orig_url = self.url_repo.get_url(shortened_url)

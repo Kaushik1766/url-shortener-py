@@ -5,16 +5,21 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6d791707-9f4e-4787-a415-697be3344873" name="Changes" comment="shorturl service">
-      <change afterPath="$PROJECT_DIR$/app/dtos/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/errors/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/lambdas/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/models/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/repository/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/service/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/utils/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/deployment/template.yaml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.aws-sam-ignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/url-shortener-py.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/url-shortener-py.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/errors/web_errors.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/errors/web_errors.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/lambdas/auth.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/lambdas/auth.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/repository/user_repo.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/repository/user_repo.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/schema.json" beforeDir="false" afterPath="$PROJECT_DIR$/app/schema.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/service/auth_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/service/auth_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/service/timer.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/utils/timer.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/service/url_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/service/url_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/deployment/template.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/deployment/template.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pyproject.toml" beforeDir="false" afterPath="$PROJECT_DIR$/pyproject.toml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/uv.lock" beforeDir="false" afterPath="$PROJECT_DIR$/uv.lock" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -42,12 +47,12 @@
     &quot;assignee&quot;: &quot;Kaushik1766&quot;
   }
 }</component>
-  <component name="GithubPullRequestsUISettings">{
-  &quot;selectedUrlAndAccountId&quot;: {
-    &quot;url&quot;: &quot;https://github.com/Kaushik1766/url-shortener-py.git&quot;,
-    &quot;accountId&quot;: &quot;65085b62-c1c7-4bc5-b963-601903961c79&quot;
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/Kaushik1766/url-shortener-py.git",
+    "accountId": "98d894bb-6c94-44b2-b616-e92948a52e69"
   }
-}</component>
+}]]></component>
   <component name="McpProjectServerCommands">
     <commands />
     <urls />
@@ -83,7 +88,7 @@
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "editor.preferences.inline.completion",
+    "settings.editor.selected.configurable": "com.intellij.python.pyrefly.PyreflyConfigurable",
     "to.speed.mode.migration.done": "true",
     "vue.rearranger.settings.migration": "true"
   }
@@ -95,6 +100,9 @@
       <recent name="$PROJECT_DIR$/app/repository" />
       <recent name="$PROJECT_DIR$/app/models" />
       <recent name="$PROJECT_DIR$/app/dtos" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/app/utils" />
     </key>
   </component>
   <component name="RunManager">
@@ -149,6 +157,7 @@
       <workItem from="1769106712147" duration="188000" />
       <workItem from="1769106915027" duration="875000" />
       <workItem from="1769151960343" duration="12900000" />
+      <workItem from="1769219442806" duration="11902000" />
     </task>
     <task id="LOCAL-00001" summary=".">
       <option name="closed" value="true" />

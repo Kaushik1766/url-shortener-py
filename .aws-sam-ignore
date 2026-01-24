@@ -1,0 +1,5 @@
+*.pdf
+*.json
+*.jpg
+*.md
+:w

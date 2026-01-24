@@ -1,5 +1,5 @@
-import boto3
-from boto3.dynamodb.conditions import Key
+from app.utils.timer import log_performance
+from typing import cast
 from mypy_boto3_dynamodb.service_resource import DynamoDBServiceResource
 from mypy_boto3_dynamodb.type_defs import TransactWriteItemTypeDef, PutItemInputTypeDef
 
@@ -13,6 +13,7 @@ class UserRepository:
         self.db = db
         self.table = db.Table(DYNAMO_DB_TABLE_NAME)
 
+    @log_performance
     def get_user_by_id(self, user_id: str) -> User:
         user_item = self.table.get_item(
             Key={
@@ -28,25 +29,29 @@ class UserRepository:
                 error_code=ErrorCodes.USER_NOT_FOUND
             )
 
-        return User(**user_item)
+        return User(**cast(dict, user_item))
 
+    @log_performance
     def get_user_by_email(self, email: str) -> User:
-        userid_query = self.table.query(
-            KeyConditionExpression=Key("PK").eq(f"USER#{email}")&Key("SK").begins_with("ID")
-        ).get('Items')
+        userid_item = self.table.get_item(
+            Key={
+                "PK":"LOOKUP",
+                "SK":f"EMAIL#{email}"
+            }
+        ).get('Item')
 
-        if len(userid_query) == 0:
+        if userid_item is None:
             raise WebException(
                 status_code=404,
                 message="User not found",
                 error_code=ErrorCodes.USER_NOT_FOUND
             )
 
-        sk : str = userid_query[0]['SK']
-        userid = sk.split('#')[1]
+        userid = str(userid_item.get('ID'))
 
         return self.get_user_by_id(userid)
 
+    @log_performance
     def add_user(self, user: User):
         put_user : TransactWriteItemTypeDef = {
             "Put":PutItemInputTypeDef(
@@ -63,8 +68,9 @@ class UserRepository:
             "Put":PutItemInputTypeDef(
                 TableName=DYNAMO_DB_TABLE_NAME,
                 Item={
-                    "PK":f"USER#{user.email}",
-                    "SK":f"ID#{user.id}",
+                    "PK":"LOOKUP",
+                    "SK":f"EMAIL#{user.email}",
+                    "ID": user.id,
                 },
                 ConditionExpression="attribute_not_exists(PK) and attribute_not_exists(SK)"
             ),

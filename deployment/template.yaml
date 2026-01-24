@@ -6,9 +6,16 @@ Parameters:
   DynamoDBARN:
     Type: String
     Default: arn:aws:dynamodb:ap-south-1:513758042129:table/url-shortener-test
-  DynamoDBTable:
-    Type: String
-    Default: url-shortener-test
+
+Globals:
+  Function:
+    Architectures:
+      - arm64
+    MemorySize: 1024
+    Runtime: python3.12
+    Timeout: 900
+    CodeUri: ../
+
 
 Resources:
   LambdaRole:
@@ -30,18 +37,39 @@ Resources:
             Statement:
               - Effect: Allow
                 Action: "dynamodb:*"
-#                Resource:
-#                  - !Sub arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${DynamoDBTable}
-#                  - !Sub arn:aws:dynamodb:${AWS::Region}:${AWS::AccountId}:table/${DynamoDBTable}/index/*
                 Resource:
                   - !Ref DynamoDBARN
                   - !Sub "${DynamoDBARN}/index/*"
+
+  ApiGateway:
+    Type: AWS::Serverless::Api
+    Properties:
+      Name: !Sub ${AWS::StackName}-api-gateway
+      StageName: dev
 
 
   Signup:
     Type: AWS::Serverless::Function
     Properties:
       Role: !GetAtt LambdaRole.Arn
-      CodeUri: ../app/
-      Handler: lambdas.auth.signup_handler
-      Runtime: python3.12
+      Handler: app.lambdas.auth.signup_handler
+      Events:
+        ApiEvent:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ApiGateway
+            Method: POST
+            Path: /auth/signup
+
+  Login:
+    Type: AWS::Serverless::Function
+    Properties:
+      Role: !GetAtt LambdaRole.Arn
+      Handler: app.lambdas.auth.login_handler
+      Events:
+        ApiEvent:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ApiGateway
+            Method: POST
+            Path: /auth/login

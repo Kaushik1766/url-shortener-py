@@ -1,7 +1,8 @@
 {
     "UserLookup":{
-        "PK":"USER#<email",
-        "SK": "ID#<user_id>"
+        "PK":"LOOKUP",
+        "SK": "EMAIL#<email>",
+        "ID": "<id>"
     },
     "User":{
         "PK": "USER#<user_id>",

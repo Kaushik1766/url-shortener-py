@@ -1,3 +1,5 @@
+from app.utils.timer import log_performance
+from app.errors.web_errors import exception_boundary
 import json
 
 import boto3
@@ -12,8 +14,10 @@ db = boto3.resource('dynamodb')
 user_repository = UserRepository(db)
 auth_service = AuthService(user_repository)
 
+@log_performance
+@exception_boundary
 def login_handler(event:events.APIGatewayProxyEventV2, ctx: context.Context)->APIGatewayProxyResponseV2:
-    body = json.loads(event.get('body'))
+    body = json.loads(event.get('body',''))
     login_req = LoginRequestDTO(**body)
 
     jwt = auth_service.login(login_req)
@@ -24,8 +28,11 @@ def login_handler(event:events.APIGatewayProxyEventV2, ctx: context.Context)->AP
             "jwt": jwt
         }),
     )
+
+@log_performance
+@exception_boundary
 def signup_handler(event: events.APIGatewayProxyEventV2, ctx: context.Context) -> APIGatewayProxyResponseV2:
-    body = json.loads(event.get('body'))
+    body = json.loads(event.get('body',""))
     signup_req = SignupRequestDTO(**body)
 
     auth_service.signup(signup_req)
