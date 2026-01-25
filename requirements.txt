@@ -1,0 +1,11 @@
+boto3
+redis
+pydantic
+pydantic[email]
+aws_lambda_typing
+hashids
+mypy-boto3
+mypy-boto3-dynamodb
+mypy_boto3_sqs
+pyjwt
+bcrypt

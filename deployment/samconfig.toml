@@ -1,0 +1,13 @@
+version = 0.1
+
+[default.deploy.parameters]
+stack_name = "url-shortener-with-analytics"
+resolve_s3 = true
+s3_prefix = "url-shortener-with-analytics"
+region = "ap-south-1"
+capabilities = "CAPABILITY_IAM"
+parameter_overrides = "DynamoDBARN=\"arn:aws:dynamodb:ap-south-1:513758042129:table/url-shortener-test\""
+image_repositories = []
+
+[default.global.parameters]
+region = "ap-south-1"
