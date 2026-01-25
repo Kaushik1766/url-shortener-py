@@ -94,6 +94,7 @@ Resources:
       Name: !Sub ${AWS::StackName}-api-gateway
       StageName: dev
 
+
   Signup:
     Type: AWS::Serverless::Function
     Properties:
@@ -122,11 +123,25 @@ Resources:
             Method: POST
             Path: /auth/login
 
+  SQSEndpointSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      VpcId: !Ref Vpc
+      GroupDescription: Allow lambda to access sqs
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+          SourceSecurityGroupId: !Ref LambdaSecurityGroup
+
   LambdaSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
       VpcId: !Ref Vpc
       GroupDescription: SG for lambda enis
+      SecurityGroupEgress:
+      - IpProtocol: -1
+        CidrIp: 0.0.0.0/0
 
   CacheSecurityGroup:
     Type: AWS::EC2::SecurityGroup
@@ -177,6 +192,19 @@ Resources:
     Properties:
       VisibilityTimeout: 200
       QueueName: !Sub ${AWS::StackName}-metrics-sqs
+
+  SQSEndpoint:
+    Type: AWS::EC2::VPCEndpoint
+    Properties:
+      VpcId: !Ref Vpc
+      ServiceName: !Sub com.amazonaws.${AWS::Region}.sqs
+      VpcEndpointType: Interface
+      PrivateDnsEnabled: true
+      SubnetIds:
+        - !Ref Subnet1
+        - !Ref Subnet2
+      SecurityGroupIds:
+        - !Ref SQSEndpointSecurityGroup
 
 
   CreateShortUrl:
@@ -241,6 +269,16 @@ Resources:
                 Resource:
                   - !Ref DynamoDBARN
                   - !Sub "${DynamoDBARN}/index/*"
+        - PolicyName: SQSSend
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - sqs:SendMessage
+                  - sqs:GetQueueAttributes
+                  - sqs:GetQueueUrl
+                Resource: !GetAtt MetricsSQS.Arn
 
   GetOriginalUrl:
     Type: AWS::Serverless::Function
@@ -256,7 +294,7 @@ Resources:
       Environment:
         Variables:
           REDIS_ENDPOINT: !GetAtt ValkeyCacheServerless.Endpoint.Address
-          SQS_URL: !Ref MetricsSQS
+          QUEUE_URL: !Ref MetricsSQS
       Events:
         ApiEvent:
           Type: Api
