@@ -63,3 +63,5 @@ class MetricsService:
                 except Exception as e:
                     print(f"failed to send metrics: {e}")
         return wrapper
+
+    def process_batch(self, metrics_batch: list[AccessMetricsSQSMessage]):

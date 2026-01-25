@@ -4,7 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6d791707-9f4e-4787-a415-697be3344873" name="Changes" comment="updated gitignore" />
+    <list default="true" id="6d791707-9f4e-4787-a415-697be3344873" name="Changes" comment="updated gitignore">
+      <change afterPath="$PROJECT_DIR$/app/lambdas/metrics.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/lambdas/metrics_repo.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/models/metrics.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/models/metrics.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/service/metrics.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/service/metrics.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -183,6 +189,7 @@
       <workItem from="1769257013163" duration="16247000" />
       <workItem from="1769287865256" duration="5283000" />
       <workItem from="1769322753457" duration="11085000" />
+      <workItem from="1769360894840" duration="2288000" />
     </task>
     <task id="LOCAL-00001" summary=".">
       <option name="closed" value="true" />
