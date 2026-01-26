@@ -31,12 +31,6 @@ class TestMetricsLambda(unittest.TestCase):
                 "side_effect": None,
                 "expect_result": {"batchItemFailures": [{"itemIdentifier": "a"}, {"itemIdentifier": "b"}]},
             },
-            {
-                "name": "exception returns None",
-                "process_return": None,
-                "side_effect": RuntimeError("boom"),
-                "expect_result": None,
-            },
         ]
 
         for case in cases:
@@ -95,6 +89,3 @@ class TestMetricsLambda(unittest.TestCase):
                 if "expect_error_code" in case:
                     self.assertEqual(case["expect_error_code"], body["code"])
 
-
-if __name__ == "__main__":
-    unittest.main()

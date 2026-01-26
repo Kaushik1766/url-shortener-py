@@ -325,6 +325,7 @@ Resources:
           Properties:
             Queue: !GetAtt MetricsSQS.Arn
             BatchSize: 100
+            MaximumBatchingWindowInSeconds: 20
             FunctionResponseTypes:
             - ReportBatchItemFailures
 
