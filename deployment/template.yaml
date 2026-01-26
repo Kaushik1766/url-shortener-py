@@ -304,6 +304,7 @@ Resources:
             RestApiId: !Ref ApiGateway
             Method: GET
             Path: /{short_url}
+
   ProcessBatch:
     Type: AWS::Serverless::Function
     Properties:
@@ -317,3 +318,16 @@ Resources:
             BatchSize: 10
             FunctionResponseTypes:
             - ReportBatchItemFailures
+
+  GetUrlMetrics:
+    Type: AWS::Serverless::Function
+    Properties:
+      Role: !GetAtt LambdaRole.Arn
+      Handler: app.lambdas.metrics.get_url_metrics
+      Events:
+        ApiEvent:
+          Type: Api
+          Properties:
+            RestApiId: !Ref ApiGateway
+            Method: GET
+            Path: /{short_url}/metrics

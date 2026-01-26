@@ -25,6 +25,7 @@ def requires_auth(func):
             raise WebException(status_code=401, message="Unauthorized", error_code=ErrorCodes.UNAUTHORIZED)
 
         token = auth_header.split(" ")[1]
+
         try:
             payload = jwt.decode(
                 token,
@@ -36,13 +37,15 @@ def requires_auth(func):
 
             return func(*args, user, **kwargs)
 
-        except Exception as e:
-            print(e)
+        except jwt.exceptions.InvalidTokenError:
             raise WebException(
                 status_code=401,
                 message="Unauthorized",
                 error_code=ErrorCodes.UNAUTHORIZED
             )
+
+        except Exception:
+            raise
 
 
 

@@ -1,3 +1,6 @@
+from app.errors.web_errors import ErrorCodes
+from app.errors.web_errors import WebException
+from app.repository.short_url_repo import ShortURLRepository
 import datetime
 from app.models.metrics import DailyAccessMetrics
 from app.models.metrics import DeviceType
@@ -16,9 +19,10 @@ from app.repository.metrics_repo import MetricsRepository
 
 
 class MetricsService:
-    def __init__(self, sqs_client: SQSClient, repo: MetricsRepository):
+    def __init__(self, sqs_client: SQSClient, metrics_repo: MetricsRepository, url_repo: ShortURLRepository):
         self.sqs_client = sqs_client
-        self.repo = repo
+        self.metrics_repo = metrics_repo
+        self.url_repo = url_repo
 
     def track_metrics(self,func):
         @wraps(func)
@@ -126,4 +130,15 @@ class MetricsService:
 
         daily_metrics_list = list(daily_metrics.values())
 
-        return self.repo.save_metrics(daily_metrics_list)
+        return self.metrics_repo.save_metrics(daily_metrics_list)
+
+    def get_metrics_by_url(self, url: str, user_id:str, start_day:str, end_day:str) -> list[DailyAccessMetrics]:
+        user_urls = self.url_repo.get_urls_by_user_id(user_id)
+        if url not in user_urls:
+            raise WebException(
+                status_code=403,
+                message="Url does not belong to user",
+                error_code=ErrorCodes.FORBIDDEN
+            )
+
+        return self.metrics_repo.get_url_metrics(url=url, start_day=start_day, end_day=end_day)

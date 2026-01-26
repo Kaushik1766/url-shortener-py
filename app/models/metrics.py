@@ -1,3 +1,4 @@
+from decimal import Decimal
 from datetime import date
 from pydantic import Field
 from enum import Enum
@@ -28,3 +29,8 @@ class DailyAccessMetrics(BaseModel):
     by_device_type: dict = Field(alias="ByDeviceType")
     by_referrer: dict = Field(alias="ByReferrer")
     message_ids: list[str] = Field(exclude=True, default=[])
+
+    class Config:
+        json_encoders = {
+            Decimal: int
+        }

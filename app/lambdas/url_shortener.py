@@ -29,7 +29,7 @@ metrics_repository = MetricsRepository(db)
 
 rate_limiter = RateLimitingService(redis_client)
 url_service = ShortURLService(url_repo, redis_client)
-metrics_service = MetricsService(sqs_client, metrics_repository)
+metrics_service = MetricsService(sqs_client, metrics_repository, url_repo)
 
 @exception_boundary
 @requires_auth

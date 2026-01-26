@@ -1,3 +1,5 @@
+from typing import cast
+from boto3.dynamodb.conditions import Key
 from botocore.exceptions import ClientError
 from app.models.metrics import DailyAccessMetrics
 from app.constants import DYNAMO_DB_TABLE_NAME
@@ -77,3 +79,18 @@ class MetricsRepository:
             )
 
         return failed_messages
+
+    def get_url_metrics(self, start_day: str, end_day: str, url: str) -> list[DailyAccessMetrics]:
+        metrics_query = self.table.query(
+            KeyConditionExpression=Key("PK").eq(f"SHORTURL#{url}") & Key("SK").between(f"DAY#{start_day}", f"DAY#{end_day}"),
+        ).get("Items", [])
+
+        if len(metrics_query) == 0:
+            return []
+
+        return [
+            DailyAccessMetrics(
+                **cast(dict, metric)
+            )
+            for metric in metrics_query
+        ]
