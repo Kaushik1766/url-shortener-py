@@ -24,7 +24,8 @@ class MetricsRepository:
                 continue
             except ClientError as e:
                 if e.response['Error']['Code'] != "ConditionalCheckFailedException":
-                    failed_messages.append(*metric.message_ids)
+                    failed_messages.extend(metric.message_ids)
+                    continue
 
             update_parts: list[str] = []
             expr_names: dict[str, str] = {}

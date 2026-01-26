@@ -2,11 +2,12 @@ import datetime
 import unittest
 from unittest.mock import MagicMock, patch
 
+import hashids
+
+from app.constants import HASHID_SALT, PRO_RATE_LIMIT, STD_RATE_LIMIT
 from app.errors.web_errors import ErrorCodes, WebException
 from app.models.subscriptions import Subscription
 from app.service.rate_limiter import RateLimitingService
-from app.constants import HASHID_SALT, STD_RATE_LIMIT, PRO_RATE_LIMIT
-import hashids
 
 
 class _FakeRedis:
@@ -27,14 +28,12 @@ class TestRateLimitingServiceCheckAccess(unittest.TestCase):
         redis_client = _FakeRedis()
         service = RateLimitingService(redis_client)
         encoder = hashids.Hashids(salt=HASHID_SALT, min_length=7)
-        valid_code = encoder.encode(123)
-        std_short = f"{Subscription.STANDARD.value}{valid_code}"
-        pro_short = f"{Subscription.PREMIUM.value}{valid_code}"
+        std_short = encoder.encode(int(f"{Subscription.STANDARD.to_number()}123"))
+        pro_short = encoder.encode(int(f"{Subscription.PREMIUM.to_number()}123"))
         fixed_time = datetime.datetime(2023, 1, 1, tzinfo=datetime.timezone.utc)
 
         cases = [
-            {"name": "invalid prefix", "short": "bad123", "prep": lambda key: None, "raises": WebException, "allowed": None},
-            {"name": "invalid hash", "short": f"{Subscription.STANDARD.value}invalid", "prep": lambda key: None, "raises": WebException, "allowed": None},
+            {"name": "invalid hash", "short": "bad123", "prep": lambda key: None, "raises": WebException, "allowed": None},
             {"name": "std within limit", "short": std_short, "prep": lambda key: None, "raises": None, "allowed": True},
             {"name": "std over limit", "short": std_short, "prep": lambda key: redis_client.counts.__setitem__(key, STD_RATE_LIMIT), "raises": None, "allowed": False},
             {"name": "pro within limit", "short": pro_short, "prep": lambda key: redis_client.counts.__setitem__(key, PRO_RATE_LIMIT - 1), "raises": None, "allowed": True},
@@ -70,6 +69,7 @@ class TestRateLimitingServiceRateLimit(unittest.TestCase):
             return {"ok": True}
 
         cases = [
+            {"name": "missing path", "event": {"pathParameters": None}, "check": True, "raises": WebException, "status": ErrorCodes.SHORTURL_NOT_FOUND},
             {"name": "missing short url", "event": {"pathParameters": {}}, "check": True, "raises": WebException, "status": ErrorCodes.SHORTURL_NOT_FOUND},
             {"name": "blocked", "event": event, "check": False, "raises": WebException, "status": ErrorCodes.TOO_MANY_REQUESTS},
             {"name": "allowed", "event": event, "check": True, "raises": None, "status": None},

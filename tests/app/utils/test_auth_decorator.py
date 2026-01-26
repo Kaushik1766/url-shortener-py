@@ -1,6 +1,8 @@
 import unittest
 from unittest.mock import patch
 
+import jwt
+
 from app.dtos.auth import JwtDTO
 from app.errors.web_errors import ErrorCodes, WebException
 from app.utils.auth_decorator import requires_auth
@@ -41,9 +43,17 @@ class TestRequiresAuth(unittest.TestCase):
                 "name": "invalid token",
                 "event": {"headers": {"Authorization": "Bearer bad"}},
                 "auth_header": "Bearer bad",
-                "decode_side_effect": Exception("bad token"),
+                "decode_side_effect": jwt.exceptions.InvalidTokenError("bad token"),
                 "expect_exception": WebException,
                 "error_code": ErrorCodes.UNAUTHORIZED,
+            },
+            {
+                "name": "unexpected error rethrows",
+                "event": {"headers": {"Authorization": "Bearer boom"}},
+                "auth_header": "Bearer boom",
+                "decode_side_effect": RuntimeError("boom"),
+                "expect_exception": RuntimeError,
+                "error_code": None,
             },
             {
                 "name": "valid token",
@@ -63,9 +73,12 @@ class TestRequiresAuth(unittest.TestCase):
             with patch("app.utils.auth_decorator.jwt.decode", return_value=decode_return, side_effect=side_effect):
                 if case["expect_exception"]:
                     with self.subTest(case["name"]):
-                        with self.assertRaises(WebException) as ctx:
+                        with self.assertRaises(Exception) as ctx:
                             wrapped(case["event"], None)
-                        self.assertEqual(case["error_code"], ctx.exception.error_code)
+                        if case["error_code"]:
+                            self.assertEqual(case["error_code"], ctx.exception.error_code)
+                        else:
+                            self.assertIsInstance(ctx.exception, case["expect_exception"])
                 else:
                     with self.subTest(case["name"]):
                         result = wrapped(case["event"], None)

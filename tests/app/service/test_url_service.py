@@ -1,5 +1,8 @@
 import unittest
 
+import hashids
+
+from app.constants import HASHID_SALT
 from app.models.subscriptions import Subscription
 from app.repository.short_url_repo import ShortURLRepository
 from app.service.url_service import ShortURLService
@@ -41,16 +44,22 @@ class _FakeRedis:
 
 class TestShortURLServiceCreateShortUrl(unittest.TestCase):
     def test_create_short_url(self):
+        encoder = hashids.Hashids(salt=HASHID_SALT, min_length=7)
         cases = [
-            {"name": "standard prefix", "subscription": Subscription.STANDARD},
-            {"name": "premium prefix", "subscription": Subscription.PREMIUM},
+            {"name": "standard encoding", "subscription": Subscription.STANDARD},
+            {"name": "premium encoding", "subscription": Subscription.PREMIUM},
         ]
         for case in cases:
             repo = _FakeRepo(counter_start=10)
             service = ShortURLService(repo, _FakeRedis())
             with self.subTest(case["name"]):
                 short_url = service.create_short_url("https://example.com", "user-id", case["subscription"])
-                self.assertTrue(short_url.startswith(case["subscription"].value))
+                decoded = encoder.decode(short_url)
+                self.assertEqual(1, len(decoded))
+                decoded_str = str(decoded[0])
+                prefix = str(case["subscription"].to_number())
+                self.assertTrue(decoded_str.startswith(prefix))
+                self.assertEqual(str(repo.counter_start), decoded_str[len(prefix):])
                 self.assertEqual(1, len(repo.added))
                 saved = repo.added[0]
                 self.assertEqual(short_url, saved.short_url)

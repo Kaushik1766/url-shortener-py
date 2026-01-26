@@ -4,16 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6d791707-9f4e-4787-a415-697be3344873" name="Changes" comment="processing">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/errors/web_errors.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/errors/web_errors.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/lambdas/metrics.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/lambdas/metrics.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/lambdas/url_shortener.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/lambdas/url_shortener.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/models/metrics.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/models/metrics.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/repository/metrics_repo.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/repository/metrics_repo.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/service/metrics.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/service/metrics.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/utils/auth_decorator.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/utils/auth_decorator.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/deployment/template.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/deployment/template.yaml" afterDir="false" />
+    <list default="true" id="6d791707-9f4e-4787-a415-697be3344873" name="Changes" comment="get metrics">
+      <change beforePath="$PROJECT_DIR$/.coverage" beforeDir="false" afterPath="$PROJECT_DIR$/.coverage" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -196,7 +188,7 @@
       <workItem from="1769322753457" duration="11085000" />
       <workItem from="1769360894840" duration="2590000" />
       <workItem from="1769399656499" duration="8688000" />
-      <workItem from="1769415803259" duration="9478000" />
+      <workItem from="1769415803259" duration="9787000" />
     </task>
     <task id="LOCAL-00001" summary=".">
       <option name="closed" value="true" />
@@ -278,7 +270,15 @@
       <option name="project" value="LOCAL" />
       <updated>1769425507495</updated>
     </task>
-    <option name="localTasksCounter" value="11" />
+    <task id="LOCAL-00011" summary="get metrics">
+      <option name="closed" value="true" />
+      <created>1769430033955</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1769430033955</updated>
+    </task>
+    <option name="localTasksCounter" value="12" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -295,7 +295,8 @@
     <MESSAGE value="updated gitignore" />
     <MESSAGE value="started metrics" />
     <MESSAGE value="processing" />
-    <option name="LAST_COMMIT_MESSAGE" value="processing" />
+    <MESSAGE value="get metrics" />
+    <option name="LAST_COMMIT_MESSAGE" value="get metrics" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/url_shortener_py$main.coverage" NAME="main Coverage Results" MODIFIED="1769160086141" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
