@@ -7,90 +7,93 @@ from app.models.user import User
 from app.repository.user_repo import UserRepository
 
 
-class TestUserRepositoryGetUserById(unittest.TestCase):
+class TestUserRepository(unittest.TestCase):
+    def setUp(self):
+        self.mock_table = MagicMock()
+        self.mock_client = MagicMock()
+        self.mock_dynamo = MagicMock()
+        self.mock_dynamo.Table.return_value = self.mock_table
+        self.mock_dynamo.meta.client = self.mock_client
+        self.repo = UserRepository(self.mock_dynamo)
+        self.user_item = {"ID": "1", "Email": "foo@example.com", "PasswordHash": "p", "Username": "Foo", "Subscription": "std"}
+
+    def tearDown(self):
+        pass
+
     def test_get_user_by_id(self):
-        user_item = {"ID": "1", "Email": "foo@example.com", "PasswordHash": "p", "Username": "Foo", "Subscription": "std"}
-        items = {("USER#1", "PROFILE"): user_item}
-        table = MagicMock()
-        table.get_item.side_effect = lambda Key: {"Item": items.get((Key["PK"], Key["SK"]))}
-        dynamo = MagicMock()
-        dynamo.Table.return_value = table
-        repo = UserRepository(dynamo)
+        items = {("USER#1", "PROFILE"): self.user_item}
+        self.mock_table.get_item.side_effect = lambda Key: {"Item": items.get((Key["PK"], Key["SK"]))}
 
         cases = [
-            {"name": "found", "user_id": "1", "raises": None},
-            {"name": "missing", "user_id": "2", "raises": WebException},
+            {"name": "found", "user_id": "1", "raises": None, "expect_email": "foo@example.com"},
+            {"name": "missing", "user_id": "2", "raises": WebException, "error_code": ErrorCodes.USER_NOT_FOUND},
         ]
 
         for case in cases:
             with self.subTest(case["name"]):
                 if case["raises"]:
                     with self.assertRaises(WebException) as ctx:
-                        repo.get_user_by_id(case["user_id"])
-                    self.assertEqual(ErrorCodes.USER_NOT_FOUND, ctx.exception.error_code)
+                        self.repo.get_user_by_id(case["user_id"])
+                    self.assertEqual(case["error_code"], ctx.exception.error_code)
                 else:
-                    user = repo.get_user_by_id(case["user_id"])
+                    user = self.repo.get_user_by_id(case["user_id"])
                     self.assertIsInstance(user, User)
-                    self.assertEqual("foo@example.com", user.email)
+                    self.assertEqual(case["expect_email"], user.email)
 
-
-class TestUserRepositoryGetUserByEmail(unittest.TestCase):
     def test_get_user_by_email(self):
-        user_item = {"ID": "1", "Email": "foo@example.com", "PasswordHash": "p", "Username": "Foo", "Subscription": "std"}
         items = {
             ("LOOKUP", "EMAIL#foo@example.com"): {"ID": "1"},
-            ("USER#1", "PROFILE"): user_item,
+            ("USER#1", "PROFILE"): self.user_item,
         }
-        table = MagicMock()
-        table.get_item.side_effect = lambda Key: {"Item": items.get((Key["PK"], Key["SK"]))}
-        dynamo = MagicMock()
-        dynamo.Table.return_value = table
-        repo = UserRepository(dynamo)
+        self.mock_table.get_item.side_effect = lambda Key: {"Item": items.get((Key["PK"], Key["SK"]))}
 
         cases = [
-            {"name": "found", "email": "foo@example.com", "raises": None},
-            {"name": "missing", "email": "bar@example.com", "raises": WebException},
+            {"name": "found", "email": "foo@example.com", "raises": None, "expect_id": "1"},
+            {"name": "missing", "email": "bar@example.com", "raises": WebException, "error_code": ErrorCodes.USER_NOT_FOUND},
         ]
 
         for case in cases:
             with self.subTest(case["name"]):
                 if case["raises"]:
                     with self.assertRaises(WebException) as ctx:
-                        repo.get_user_by_email(case["email"])
-                    self.assertEqual(ErrorCodes.USER_NOT_FOUND, ctx.exception.error_code)
+                        self.repo.get_user_by_email(case["email"])
+                    self.assertEqual(case["error_code"], ctx.exception.error_code)
                 else:
-                    user = repo.get_user_by_email(case["email"])
-                    self.assertEqual("1", user.id)
+                    user = self.repo.get_user_by_email(case["email"])
+                    self.assertEqual(case["expect_id"], user.id)
 
-
-class TestUserRepositoryAddUser(unittest.TestCase):
     def test_add_user(self):
-        table = MagicMock()
-        client = MagicMock()
-        dynamo = MagicMock()
-        dynamo.Table.return_value = table
-        dynamo.meta.client = client
-        repo = UserRepository(dynamo)
+        cases = [
+            {
+                "name": "adds user with transaction",
+                "user": User(ID="2", Email="bar@example.com", PasswordHash="hash", Username="Bar"),
+                "expect_items_count": 2,
+            },
+        ]
 
-        repo.add_user(User(ID="2", Email="bar@example.com", PasswordHash="hash", Username="Bar"))
+        for case in cases:
+            with self.subTest(case["name"]):
+                self.repo.add_user(case["user"])
+                self.mock_client.transact_write_items.assert_called()
+                call_kwargs = self.mock_client.transact_write_items.call_args.kwargs
+                self.assertEqual(case["expect_items_count"], len(call_kwargs["TransactItems"]))
 
-        client.transact_write_items.assert_called_once()
-        call_kwargs = client.transact_write_items.call_args.kwargs
-        self.assertEqual(2, len(call_kwargs["TransactItems"]))
-
-
-class TestUserRepositorySetUserSubscription(unittest.TestCase):
     def test_set_user_subscription(self):
-        table = MagicMock()
-        dynamo = MagicMock()
-        dynamo.Table.return_value = table
-        repo = UserRepository(dynamo)
+        cases = [
+            {
+                "name": "updates subscription",
+                "user_id": "abc",
+                "subscription": Subscription.PREMIUM,
+                "expect_subscription": Subscription.PREMIUM.value,
+            },
+        ]
 
-        repo.set_user_subscription(user_id="abc", subscription=Subscription.PREMIUM)
-
-        table.update_item.assert_called_once()
-        kwargs = table.update_item.call_args.kwargs
-        self.assertEqual(Subscription.PREMIUM.value, kwargs["ExpressionAttributeValues"][":subscription"])
+        for case in cases:
+            with self.subTest(case["name"]):
+                self.repo.set_user_subscription(user_id=case["user_id"], subscription=case["subscription"])
+                self.mock_table.update_item.assert_called()
+                kwargs = self.mock_table.update_item.call_args.kwargs
+                self.assertEqual(case["expect_subscription"], kwargs["ExpressionAttributeValues"][":subscription"])
 
 
 if __name__ == "__main__":

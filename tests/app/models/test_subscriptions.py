@@ -4,13 +4,27 @@ from app.models.subscriptions import Subscription
 
 
 class TestSubscription(unittest.TestCase):
-    def test_from_number_valid(self):
-        self.assertIs(Subscription.from_number(1), Subscription.STANDARD)
-        self.assertIs(Subscription.from_number(2), Subscription.PREMIUM)
+    def setUp(self):
+        pass
 
-    def test_from_number_invalid(self):
-        with self.assertRaises(ValueError):
-            Subscription.from_number(3)
+    def tearDown(self):
+        pass
+
+    def test_from_number(self):
+        cases = [
+            {"name": "standard from 1", "number": 1, "expect": Subscription.STANDARD, "raises": None},
+            {"name": "premium from 2", "number": 2, "expect": Subscription.PREMIUM, "raises": None},
+            {"name": "invalid number", "number": 3, "expect": None, "raises": ValueError},
+        ]
+
+        for case in cases:
+            with self.subTest(case["name"]):
+                if case["raises"]:
+                    with self.assertRaises(case["raises"]):
+                        Subscription.from_number(case["number"])
+                else:
+                    result = Subscription.from_number(case["number"])
+                    self.assertIs(case["expect"], result)
 
 
 if __name__ == "__main__":

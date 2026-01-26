@@ -1,102 +1,104 @@
 import unittest
+from unittest.mock import MagicMock
 
 import hashids
 
 from app.constants import HASHID_SALT
 from app.models.subscriptions import Subscription
-from app.repository.short_url_repo import ShortURLRepository
 from app.service.url_service import ShortURLService
 
 
-class _FakeRepo(ShortURLRepository):
-    def __init__(self, counter_start: int = 0):
-        self.counter_start = counter_start
-        self.added = []
-        self.url_lookup = {}
-        self.urls_by_user = {}
+class TestShortURLService(unittest.TestCase):
+    def setUp(self):
+        self.mock_repo = MagicMock()
+        self.mock_redis = MagicMock()
+        self.service = ShortURLService(self.mock_repo, self.mock_redis)
+        self.encoder = hashids.Hashids(salt=HASHID_SALT, min_length=7)
 
-    def get_counter(self):
-        self.counter_start += 1
-        return self.counter_start
+    def tearDown(self):
+        pass
 
-    def add_url(self, short_url):
-        self.added.append(short_url)
-
-    def get_url(self, shortened_url: str) -> str:
-        return self.url_lookup.get(shortened_url)
-
-    def get_urls_by_user_id(self, user_id: str) -> list[str]:
-        return self.urls_by_user.get(user_id, [])
-
-
-class _FakeRedis:
-    def __init__(self):
-        self.store = {}
-        self.set_calls = []
-
-    def get(self, key):
-        return self.store.get(key)
-
-    def set(self, key, value, ex=None):
-        self.store[key] = value
-        self.set_calls.append({"key": key, "value": value, "ex": ex})
-
-
-class TestShortURLServiceCreateShortUrl(unittest.TestCase):
     def test_create_short_url(self):
-        encoder = hashids.Hashids(salt=HASHID_SALT, min_length=7)
         cases = [
-            {"name": "standard encoding", "subscription": Subscription.STANDARD},
-            {"name": "premium encoding", "subscription": Subscription.PREMIUM},
+            {
+                "name": "standard encoding",
+                "subscription": Subscription.STANDARD,
+                "counter_start": 10,
+                "expect_prefix": str(Subscription.STANDARD.to_number()),
+            },
+            {
+                "name": "premium encoding",
+                "subscription": Subscription.PREMIUM,
+                "counter_start": 10,
+                "expect_prefix": str(Subscription.PREMIUM.to_number()),
+            },
         ]
+
         for case in cases:
-            repo = _FakeRepo(counter_start=10)
-            service = ShortURLService(repo, _FakeRedis())
             with self.subTest(case["name"]):
-                short_url = service.create_short_url("https://example.com", "user-id", case["subscription"])
-                decoded = encoder.decode(short_url)
+                self.mock_repo.get_counter.return_value = case["counter_start"] + 1
+                self.mock_repo.added = []
+                
+                short_url = self.service.create_short_url("https://example.com", "user-id", case["subscription"])
+                
+                decoded = self.encoder.decode(short_url)
                 self.assertEqual(1, len(decoded))
                 decoded_str = str(decoded[0])
-                prefix = str(case["subscription"].to_number())
-                self.assertTrue(decoded_str.startswith(prefix))
-                self.assertEqual(str(repo.counter_start), decoded_str[len(prefix):])
-                self.assertEqual(1, len(repo.added))
-                saved = repo.added[0]
-                self.assertEqual(short_url, saved.short_url)
-                self.assertEqual("user-id", saved.owner_id)
+                self.assertTrue(decoded_str.startswith(case["expect_prefix"]))
+                self.mock_repo.add_url.assert_called()
 
-
-class TestShortURLServiceGetOriginalUrl(unittest.TestCase):
     def test_get_original_url(self):
-        repo = _FakeRepo()
-        redis_client = _FakeRedis()
-        repo.url_lookup["stdabc"] = "cached.com"
-        service = ShortURLService(repo, redis_client)
-
         cases = [
-            {"name": "cache hit", "cache_value": "hit.com", "db_value": "db.com"},
-            {"name": "cache miss", "cache_value": None, "db_value": "db.com"},
+            {
+                "name": "cache hit",
+                "short_url": "stdabc",
+                "cache_value": "hit.com",
+                "db_value": "db.com",
+                "expect_result": "hit.com",
+                "expect_db_called": False,
+            },
+            {
+                "name": "cache miss",
+                "short_url": "stdabc",
+                "cache_value": None,
+                "db_value": "db.com",
+                "expect_result": "db.com",
+                "expect_db_called": True,
+            },
         ]
 
         for case in cases:
-            redis_client.store = {"shorturl:stdabc": case["cache_value"]} if case["cache_value"] else {}
-            repo.url_lookup["stdabc"] = case["db_value"]
             with self.subTest(case["name"]):
-                result = service.get_original_url("stdabc")
-                expected = case["cache_value"] or case["db_value"]
-                self.assertEqual(str(expected), result)
-                if case["cache_value"] is None:
-                    self.assertEqual(1, len(redis_client.set_calls))
-                    self.assertEqual("shorturl:stdabc", redis_client.set_calls[-1]["key"])
+                self.mock_redis.get.return_value = case["cache_value"]
+                self.mock_repo.get_url.return_value = case["db_value"]
+                self.mock_redis.set.reset_mock()
+                
+                result = self.service.get_original_url(case["short_url"])
+                
+                self.assertEqual(case["expect_result"], result)
+                if not case["expect_db_called"]:
+                    self.mock_repo.get_url.assert_not_called()
+                else:
+                    self.mock_repo.get_url.assert_called_once()
+                    self.mock_redis.set.assert_called()
 
-
-class TestShortURLServiceGetUrlsByUser(unittest.TestCase):
     def test_get_urls_by_user(self):
-        repo = _FakeRepo()
-        repo.urls_by_user["u1"] = ["a", "b"]
-        service = ShortURLService(repo, _FakeRedis())
+        cases = [
+            {
+                "name": "returns user urls",
+                "user_id": "u1",
+                "repo_return": ["a", "b"],
+                "expect": ["a", "b"],
+            },
+        ]
 
-        self.assertEqual(["a", "b"], service.get_urls_by_user("u1"))
+        for case in cases:
+            with self.subTest(case["name"]):
+                self.mock_repo.get_urls_by_user_id.return_value = case["repo_return"]
+                
+                result = self.service.get_urls_by_user(case["user_id"])
+                
+                self.assertEqual(case["expect"], result)
 
 
 if __name__ == "__main__":

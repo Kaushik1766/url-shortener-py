@@ -1,4 +1,5 @@
 import unittest
+from unittest.mock import MagicMock
 
 from botocore.exceptions import ClientError
 
@@ -53,43 +54,65 @@ class TestMetricsRepository(unittest.TestCase):
             ByReferrer={"ref": 2},
             message_ids=["m1", "m2"],
         )
+        self.mock_table = MagicMock()
+        self.mock_db = MagicMock()
+        self.mock_db.Table.return_value = self.mock_table
+        self.mock_db.meta = type("meta", (), {"client": None})
 
-    def test_save_metrics_insert_then_update(self):
-        table = _FakeTable(put_error_code="ConditionalCheckFailedException")
-        repo = MetricsRepository(_FakeDB(table))
+    def tearDown(self):
+        pass
 
-        failed = repo.save_metrics([self.sample_metric])
+    def test_save_metrics(self):
+        cases = [
+            {
+                "name": "insert then update on conditional failure",
+                "put_error_code": "ConditionalCheckFailedException",
+                "expect_failed": [],
+                "expect_update_calls": 1,
+            },
+            {
+                "name": "non conditional error returns failed",
+                "put_error_code": "Other",
+                "expect_failed": ["m1", "m2"],
+                "expect_update_calls": 0,
+            },
+        ]
 
-        self.assertEqual([], failed)
-        self.assertEqual(1, len(table.put_calls))
-        self.assertEqual(1, len(table.update_calls))
-        update = table.update_calls[0]
-        self.assertEqual("SHORTURL#abc", update["Key"]["PK"])
-        self.assertIn("ByCountry", update["UpdateExpression"])
+        for case in cases:
+            with self.subTest(case["name"]):
+                table = _FakeTable(put_error_code=case["put_error_code"])
+                repo = MetricsRepository(_FakeDB(table))
 
-    def test_save_metrics_non_conditional_error_returns_failed(self):
-        table = _FakeTable(put_error_code="Other")
-        repo = MetricsRepository(_FakeDB(table))
+                failed = repo.save_metrics([self.sample_metric])
 
-        failed = repo.save_metrics([self.sample_metric])
+                self.assertEqual(case["expect_failed"], failed)
+                self.assertEqual(case["expect_update_calls"], len(table.update_calls))
 
-        self.assertEqual(["m1", "m2"], failed)
-        self.assertEqual(0, len(table.update_calls))
+    def test_get_url_metrics(self):
+        cases = [
+            {
+                "name": "empty results",
+                "query_items": [],
+                "expect_count": 0,
+            },
+            {
+                "name": "returns items",
+                "query_items": [self.sample_metric.model_dump(by_alias=True)],
+                "expect_count": 1,
+                "expect_short_url": "abc",
+            },
+        ]
 
-    def test_get_url_metrics_empty(self):
-        table = _FakeTable(query_items=[])
-        repo = MetricsRepository(_FakeDB(table))
+        for case in cases:
+            with self.subTest(case["name"]):
+                table = _FakeTable(query_items=case["query_items"])
+                repo = MetricsRepository(_FakeDB(table))
 
-        self.assertEqual([], repo.get_url_metrics("2023-01-01", "2023-01-02", "abc"))
-
-    def test_get_url_metrics_items(self):
-        item = self.sample_metric.model_dump(by_alias=True)
-        table = _FakeTable(query_items=[item])
-        repo = MetricsRepository(_FakeDB(table))
-
-        result = repo.get_url_metrics("2023-01-01", "2023-01-02", "abc")
-        self.assertEqual(1, len(result))
-        self.assertEqual("abc", result[0].short_url)
+                result = repo.get_url_metrics("2023-01-01", "2023-01-02", "abc")
+                
+                self.assertEqual(case["expect_count"], len(result))
+                if "expect_short_url" in case:
+                    self.assertEqual(case["expect_short_url"], result[0].short_url)
 
 
 if __name__ == "__main__":

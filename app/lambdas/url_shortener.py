@@ -53,10 +53,10 @@ def create_shorturl_handler(event:events.APIGatewayProxyEventV2, ctx: context.Co
 def get_url_handler(event:events.APIGatewayProxyEventV2, ctx: context.Context):
     path_params = event['pathParameters']
 
+    print(event.get("headers"))
     short_url = path_params.get('short_url', None)
 
     url = url_service.get_original_url(short_url)
-    print(url)
 
     return APIGatewayProxyResponseV2(
         statusCode=302,

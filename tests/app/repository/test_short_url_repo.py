@@ -6,14 +6,21 @@ from app.models.short_url import ShortUrl
 from app.repository.short_url_repo import ShortURLRepository
 
 
-class TestShortURLRepositoryGetUrl(unittest.TestCase):
+class TestShortURLRepository(unittest.TestCase):
+    def setUp(self):
+        self.mock_table = MagicMock()
+        self.mock_client = MagicMock()
+        self.mock_dynamo = MagicMock()
+        self.mock_dynamo.Table.return_value = self.mock_table
+        self.mock_dynamo.meta.client = self.mock_client
+        self.repo = ShortURLRepository(self.mock_dynamo)
+
+    def tearDown(self):
+        pass
+
     def test_get_url(self):
         items = {("SHORTURL#abc", "DETAILS"): {"URL": "example.com"}}
-        table = MagicMock()
-        table.get_item.side_effect = lambda Key: {"Item": items.get((Key["PK"], Key["SK"]))}
-        dynamo = MagicMock()
-        dynamo.Table.return_value = table
-        repo = ShortURLRepository(dynamo)
+        self.mock_table.get_item.side_effect = lambda Key: {"Item": items.get((Key["PK"], Key["SK"]))}
 
         cases = [
             {"name": "found", "short": "abc", "expect": "example.com", "raises": None},
@@ -24,56 +31,63 @@ class TestShortURLRepositoryGetUrl(unittest.TestCase):
             with self.subTest(case["name"]):
                 if case["raises"]:
                     with self.assertRaises(WebException) as ctx:
-                        repo.get_url(case["short"])
+                        self.repo.get_url(case["short"])
                     self.assertEqual(ErrorCodes.SHORTURL_NOT_FOUND, ctx.exception.error_code)
                 else:
-                    self.assertEqual(case["expect"], repo.get_url(case["short"]))
+                    self.assertEqual(case["expect"], self.repo.get_url(case["short"]))
 
-
-class TestShortURLRepositoryGetUrlsByUser(unittest.TestCase):
     def test_get_urls_by_user_id(self):
-        table = MagicMock()
-        table.query.return_value = {"Items": [{"SK": "SHORTURL#one"}, {"SK": "SHORTURL#two"}]}
-        dynamo = MagicMock()
-        dynamo.Table.return_value = table
-        repo = ShortURLRepository(dynamo)
+        cases = [
+            {
+                "name": "returns user urls",
+                "query_return": {"Items": [{"SK": "SHORTURL#one"}, {"SK": "SHORTURL#two"}]},
+                "user_id": "user-1",
+                "expect": ["one", "two"],
+            },
+        ]
 
-        result = repo.get_urls_by_user_id("user-1")
-        self.assertEqual(["one", "two"], result)
+        for case in cases:
+            with self.subTest(case["name"]):
+                self.mock_table.query.return_value = case["query_return"]
+                result = self.repo.get_urls_by_user_id(case["user_id"])
+                self.assertEqual(case["expect"], result)
 
-
-class TestShortURLRepositoryAddUrl(unittest.TestCase):
     def test_add_url(self):
-        table = MagicMock()
-        client = MagicMock()
-        dynamo = MagicMock()
-        dynamo.Table.return_value = table
-        dynamo.meta.client = client
-        repo = ShortURLRepository(dynamo)
+        cases = [
+            {
+                "name": "adds url with transaction",
+                "url": ShortUrl(ShortURL="stdabc123", ID="1", URL="example.com", CreatedAt=1, OwnerID="user"),
+                "expect_items_count": 2,
+            },
+        ]
 
-        new_url = ShortUrl(ShortURL="stdabc123", ID="1", URL="example.com", CreatedAt=1, OwnerID="user")
-        repo.add_url(new_url)
+        for case in cases:
+            with self.subTest(case["name"]):
+                self.repo.add_url(case["url"])
+                self.mock_client.transact_write_items.assert_called()
+                call_kwargs = self.mock_client.transact_write_items.call_args.kwargs
+                self.assertEqual(case["expect_items_count"], len(call_kwargs["TransactItems"]))
 
-        client.transact_write_items.assert_called_once()
-        call_kwargs = client.transact_write_items.call_args.kwargs
-        self.assertEqual(2, len(call_kwargs["TransactItems"]))
-
-
-class TestShortURLRepositoryGetCounter(unittest.TestCase):
     def test_get_counter(self):
-        counter = {"val": 5}
-        table = MagicMock()
+        cases = [
+            {
+                "name": "increments counter",
+                "initial_val": 5,
+                "expect": 6,
+            },
+        ]
 
-        def _update_item(**kwargs):
-            counter["val"] += int(kwargs.get("ExpressionAttributeValues", {}).get(":inc", 0))
-            return {"Attributes": {"CurrentCount": counter["val"]}}
+        for case in cases:
+            with self.subTest(case["name"]):
+                counter = {"val": case["initial_val"]}
 
-        table.update_item.side_effect = _update_item
-        dynamo = MagicMock()
-        dynamo.Table.return_value = table
-        repo = ShortURLRepository(dynamo)
+                def _update_item(**kwargs):
+                    counter["val"] += int(kwargs.get("ExpressionAttributeValues", {}).get(":inc", 0))
+                    return {"Attributes": {"CurrentCount": counter["val"]}}
 
-        self.assertEqual(6, repo.get_counter())
+                self.mock_table.update_item.side_effect = _update_item
+                result = self.repo.get_counter()
+                self.assertEqual(case["expect"], result)
 
 
 if __name__ == "__main__":

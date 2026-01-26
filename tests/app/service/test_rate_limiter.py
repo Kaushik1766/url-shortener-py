@@ -10,81 +10,125 @@ from app.models.subscriptions import Subscription
 from app.service.rate_limiter import RateLimitingService
 
 
-class _FakeRedis:
-    def __init__(self):
-        self.counts = {}
-        self.expire_calls = []
+class TestRateLimitingService(unittest.TestCase):
+    def setUp(self):
+        self.mock_redis = MagicMock()
+        self.service = RateLimitingService(self.mock_redis)
+        self.encoder = hashids.Hashids(salt=HASHID_SALT, min_length=7)
+        self.std_short = self.encoder.encode(int(f"{Subscription.STANDARD.to_number()}123"))
+        self.pro_short = self.encoder.encode(int(f"{Subscription.PREMIUM.to_number()}123"))
+        self.fixed_time = datetime.datetime(2023, 1, 1, tzinfo=datetime.timezone.utc)
 
-    def incr(self, key):
-        self.counts[key] = self.counts.get(key, 0) + 1
-        return self.counts[key]
+    def tearDown(self):
+        pass
 
-    def expire(self, key, ttl):
-        self.expire_calls.append((key, ttl))
-
-
-class TestRateLimitingServiceCheckAccess(unittest.TestCase):
     def test_check_access(self):
-        redis_client = _FakeRedis()
-        service = RateLimitingService(redis_client)
-        encoder = hashids.Hashids(salt=HASHID_SALT, min_length=7)
-        std_short = encoder.encode(int(f"{Subscription.STANDARD.to_number()}123"))
-        pro_short = encoder.encode(int(f"{Subscription.PREMIUM.to_number()}123"))
-        fixed_time = datetime.datetime(2023, 1, 1, tzinfo=datetime.timezone.utc)
-
         cases = [
-            {"name": "invalid hash", "short": "bad123", "prep": lambda key: None, "raises": WebException, "allowed": None},
-            {"name": "std within limit", "short": std_short, "prep": lambda key: None, "raises": None, "allowed": True},
-            {"name": "std over limit", "short": std_short, "prep": lambda key: redis_client.counts.__setitem__(key, STD_RATE_LIMIT), "raises": None, "allowed": False},
-            {"name": "pro within limit", "short": pro_short, "prep": lambda key: redis_client.counts.__setitem__(key, PRO_RATE_LIMIT - 1), "raises": None, "allowed": True},
+            {
+                "name": "invalid hash",
+                "short": "bad123",
+                "prep_counts": {},
+                "raises": WebException,
+                "error_code": ErrorCodes.SHORTURL_NOT_FOUND,
+            },
+            {
+                "name": "std within limit",
+                "short": self.std_short,
+                "prep_counts": {},
+                "raises": None,
+                "expect_allowed": True,
+            },
+            {
+                "name": "std over limit",
+                "short": self.std_short,
+                "prep_counts": lambda key: {key: STD_RATE_LIMIT + 1},
+                "raises": None,
+                "expect_allowed": False,
+            },
+            {
+                "name": "pro within limit",
+                "short": self.pro_short,
+                "prep_counts": lambda key: {key: PRO_RATE_LIMIT - 1},
+                "raises": None,
+                "expect_allowed": True,
+            },
         ]
 
         for case in cases:
-            with patch("app.service.rate_limiter.datetime") as mock_dt:
-                mock_dt.datetime.now.return_value = fixed_time
-                mock_dt.datetime.strftime = datetime.datetime.strftime
-                mock_dt.timezone = datetime.timezone
-                mock_dt.timedelta = datetime.timedelta
-                window_start = int(fixed_time.timestamp()) - (int(fixed_time.timestamp()) % 60)
-                key = f"rl:{case['short']}:{window_start}"
-                case["prep"](key)
-
-                with self.subTest(case["name"]):
+            with self.subTest(case["name"]):
+                with patch("app.service.rate_limiter.datetime") as mock_dt:
+                    mock_dt.datetime.now.return_value = self.fixed_time
+                    mock_dt.datetime.strftime = datetime.datetime.strftime
+                    mock_dt.timezone = datetime.timezone
+                    mock_dt.timedelta = datetime.timedelta
+                    
+                    window_start = int(self.fixed_time.timestamp()) - (int(self.fixed_time.timestamp()) % 60)
+                    key = f"rl:{case['short']}:{window_start}"
+                    
+                    if callable(case["prep_counts"]):
+                        counts = case["prep_counts"](key)
+                    else:
+                        counts = case["prep_counts"]
+                    
+                    self.mock_redis.incr.return_value = counts.get(key, 1)
+                    
                     if case["raises"]:
                         with self.assertRaises(WebException) as ctx:
-                            service.check_access(case["short"])
-                        self.assertEqual(ErrorCodes.SHORTURL_NOT_FOUND, ctx.exception.error_code)
+                            self.service.check_access(case["short"])
+                        self.assertEqual(case["error_code"], ctx.exception.error_code)
                     else:
-                        allowed = service.check_access(case["short"])
-                        self.assertEqual(case["allowed"], allowed)
+                        allowed = self.service.check_access(case["short"])
+                        self.assertEqual(case["expect_allowed"], allowed)
 
-
-class TestRateLimitingServiceRateLimit(unittest.TestCase):
     def test_rate_limit(self):
-        redis_client = _FakeRedis()
-        service = RateLimitingService(redis_client)
         event = {"pathParameters": {"short_url": "stdabc"}}
 
         def dummy(*args, **kwargs):
             return {"ok": True}
 
         cases = [
-            {"name": "missing path", "event": {"pathParameters": None}, "check": True, "raises": WebException, "status": ErrorCodes.SHORTURL_NOT_FOUND},
-            {"name": "missing short url", "event": {"pathParameters": {}}, "check": True, "raises": WebException, "status": ErrorCodes.SHORTURL_NOT_FOUND},
-            {"name": "blocked", "event": event, "check": False, "raises": WebException, "status": ErrorCodes.TOO_MANY_REQUESTS},
-            {"name": "allowed", "event": event, "check": True, "raises": None, "status": None},
+            {
+                "name": "missing path",
+                "event": {"pathParameters": None},
+                "check_return": True,
+                "raises": WebException,
+                "error_code": ErrorCodes.SHORTURL_NOT_FOUND,
+            },
+            {
+                "name": "missing short url",
+                "event": {"pathParameters": {}},
+                "check_return": True,
+                "raises": WebException,
+                "error_code": ErrorCodes.SHORTURL_NOT_FOUND,
+            },
+            {
+                "name": "blocked",
+                "event": event,
+                "check_return": False,
+                "raises": WebException,
+                "error_code": ErrorCodes.TOO_MANY_REQUESTS,
+            },
+            {
+                "name": "allowed",
+                "event": event,
+                "check_return": True,
+                "raises": None,
+                "expect_result": {"ok": True},
+            },
         ]
 
         for case in cases:
             with self.subTest(case["name"]):
-                service.check_access = MagicMock(return_value=case["check"])
-                wrapped = service.rate_limit(dummy)
+                self.service.check_access = MagicMock(return_value=case["check_return"])
+                wrapped = self.service.rate_limit(dummy)
+                
                 if case["raises"]:
                     with self.assertRaises(WebException) as ctx:
                         wrapped(case["event"], None)
-                    self.assertEqual(case["status"], ctx.exception.error_code)
+                    self.assertEqual(case["error_code"], ctx.exception.error_code)
                 else:
-                    self.assertEqual({"ok": True}, wrapped(case["event"], None))
+                    result = wrapped(case["event"], None)
+                    self.assertEqual(case["expect_result"], result)
 
 
 if __name__ == "__main__":
