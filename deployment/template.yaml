@@ -192,6 +192,15 @@ Resources:
     Properties:
       VisibilityTimeout: 200
       QueueName: !Sub ${AWS::StackName}-metrics-sqs
+      RedrivePolicy:
+        deadLetterTargetArn: !GetAtt MetricsDLQ.Arn
+        maxReceiveCount: 3
+
+  MetricsDLQ:
+    Type: AWS::SQS::Queue
+    Properties:
+      VisibilityTimeout: 200
+      QueueName: !Sub ${AWS::StackName}-metrics-dlq
 
   SQSEndpoint:
     Type: AWS::EC2::VPCEndpoint
@@ -315,7 +324,7 @@ Resources:
           Type: SQS
           Properties:
             Queue: !GetAtt MetricsSQS.Arn
-            BatchSize: 10
+            BatchSize: 100
             FunctionResponseTypes:
             - ReportBatchItemFailures
 
