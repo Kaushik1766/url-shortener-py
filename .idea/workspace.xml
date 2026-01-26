@@ -4,12 +4,21 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6d791707-9f4e-4787-a415-697be3344873" name="Changes" comment="updated gitignore">
-      <change afterPath="$PROJECT_DIR$/app/lambdas/metrics.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/lambdas/metrics_repo.py" afterDir="false" />
+    <list default="true" id="6d791707-9f4e-4787-a415-697be3344873" name="Changes" comment="started metrics">
+      <change afterPath="$PROJECT_DIR$/app/service/metric_processing.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/lambdas/metrics.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/lambdas/metrics.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/lambdas/metrics_repo.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/repository/metrics_repo.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/lambdas/url_shortener.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/lambdas/url_shortener.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/models/metrics.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/models/metrics.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/models/subscriptions.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/models/subscriptions.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/repository/user_repo.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/repository/user_repo.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/service/metrics.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/service/metrics.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/service/rate_limiter.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/service/rate_limiter.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/service/url_service.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/service/url_service.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/deployment/template.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/deployment/template.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/app/service/test_metrics.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/app/service/test_metrics.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -83,7 +92,7 @@
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
     &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
     &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;editor.preferences.appearance&quot;,
     &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
@@ -97,6 +106,7 @@
       <recent name="$PROJECT_DIR$/app/dtos" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/app/repository" />
       <recent name="$PROJECT_DIR$/app/utils" />
     </key>
   </component>
@@ -189,7 +199,9 @@
       <workItem from="1769257013163" duration="16247000" />
       <workItem from="1769287865256" duration="5283000" />
       <workItem from="1769322753457" duration="11085000" />
-      <workItem from="1769360894840" duration="2288000" />
+      <workItem from="1769360894840" duration="2590000" />
+      <workItem from="1769399656499" duration="8688000" />
+      <workItem from="1769415803259" duration="5926000" />
     </task>
     <task id="LOCAL-00001" summary=".">
       <option name="closed" value="true" />
@@ -255,7 +267,15 @@
       <option name="project" value="LOCAL" />
       <updated>1769350146830</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="started metrics">
+      <option name="closed" value="true" />
+      <created>1769363478407</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1769363478408</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -270,7 +290,8 @@
     <MESSAGE value="metrics service upload to queue" />
     <MESSAGE value="upload metrics fix" />
     <MESSAGE value="updated gitignore" />
-    <option name="LAST_COMMIT_MESSAGE" value="updated gitignore" />
+    <MESSAGE value="started metrics" />
+    <option name="LAST_COMMIT_MESSAGE" value="started metrics" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/url_shortener_py$main.coverage" NAME="main Coverage Results" MODIFIED="1769160086141" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />

@@ -84,7 +84,7 @@ class UserRepository:
     def set_user_subscription(self, user_id: str, subscription: Subscription):
         self.table.update_item(
             Key={
-                "PK":f"USER#{id}",
+                "PK":f"USER#{user_id}",
                 "SK":"PROFILE"
             },
             UpdateExpression="SET Subscription = :subscription",

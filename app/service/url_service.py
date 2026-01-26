@@ -18,12 +18,13 @@ class ShortURLService:
 
     @log_performance
     def create_short_url(self, url: str, user_id: str, subscription: Subscription) -> str:
-        shortened_url = subscription.value
+        # shortened_url = subscription.value
         count = self.url_repo.get_counter()
-        shortened_url += hashids.Hashids(
+        subscription_val = subscription.to_number()
+        shortened_url = hashids.Hashids(
             salt=HASHID_SALT,
             min_length=7
-        ).encode(int(count))
+        ).encode(int(f"{subscription_val}{count}"))
 
         short_url = ShortUrl(
             ShortURL= shortened_url,

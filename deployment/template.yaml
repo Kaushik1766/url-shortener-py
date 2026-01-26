@@ -278,6 +278,8 @@ Resources:
                   - sqs:SendMessage
                   - sqs:GetQueueAttributes
                   - sqs:GetQueueUrl
+                  - sqs:ReceiveMessage
+                  - sqs:DeleteMessage
                 Resource: !GetAtt MetricsSQS.Arn
 
   GetOriginalUrl:
@@ -302,3 +304,16 @@ Resources:
             RestApiId: !Ref ApiGateway
             Method: GET
             Path: /{short_url}
+  ProcessBatch:
+    Type: AWS::Serverless::Function
+    Properties:
+      Role: !GetAtt VpcLambdaRole.Arn
+      Handler: app.lambdas.metrics.process_metrics
+      Events:
+        SQSEvent:
+          Type: SQS
+          Properties:
+            Queue: !GetAtt MetricsSQS.Arn
+            BatchSize: 10
+            FunctionResponseTypes:
+            - ReportBatchItemFailures

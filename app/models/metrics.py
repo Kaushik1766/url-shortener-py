@@ -18,11 +18,13 @@ class AccessMetricsSQSMessage(BaseModel):
     user_agent: str
     country: str
     device: DeviceType
+    message_id: str = Field(exclude=True, default="")
 
 class DailyAccessMetrics(BaseModel):
-    short_url: str
-    day: date
+    short_url: str = Field(alias="ShortURL")
+    day: str = Field(alias="Day")
     total_hits: int = Field(alias="TotalHits")
     by_country: dict = Field(alias="ByCountry")
     by_device_type: dict = Field(alias="ByDeviceType")
     by_referrer: dict = Field(alias="ByReferrer")
+    message_ids: list[str] = Field(exclude=True, default=[])

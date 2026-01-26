@@ -1,3 +1,4 @@
+from app.repository.metrics_repo import MetricsRepository
 from app.service.metrics import MetricsService
 from app.service.subscription_service import SubscriptionService
 from app.service.rate_limiter import RateLimitingService
@@ -24,10 +25,11 @@ redis_client = Redis(host=redis_endpoint, port=6379, db=0, ssl=True, decode_resp
 sqs_client = boto3.client('sqs')
 
 url_repo = ShortURLRepository(db)
+metrics_repository = MetricsRepository(db)
 
 rate_limiter = RateLimitingService(redis_client)
 url_service = ShortURLService(url_repo, redis_client)
-metrics_service = MetricsService(sqs_client)
+metrics_service = MetricsService(sqs_client, metrics_repository)
 
 @exception_boundary
 @requires_auth

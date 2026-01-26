@@ -1,3 +1,7 @@
+import datetime
+
+from app.models.metrics import DailyAccessMetrics
+from app.repository.metrics_repo import MetricsRepository
 import boto3
 import hashids
 import redis
@@ -11,12 +15,11 @@ from app.models.user import User
 from app.repository.short_url_repo import ShortURLRepository
 from app.repository.user_repo import UserRepository
 from app.service.url_service import ShortURLService
-from app.utils import base62
 
 def main():
 
-    # db = boto3.resource('dynamodb')
-    # repo = ShortURLRepository(db)
+    db = boto3.resource('dynamodb')
+    repo = MetricsRepository(db)
     # redis_client = redis.Redis(host='localhost', port=6379, db=0,decode_responses=True)
     # service = ShortURLService(repo, redis_client)
     #
@@ -28,14 +31,45 @@ def main():
     # except Exception as e:
     #     print(e)
     # print(hashids.Hashids(salt=HASHID_SALT, min_length=7).decode("Yo6eY67")[0])
-    try:
-        user = User(
-            Email="asdf"
+    print(hashids.Hashids(salt=HASHID_SALT, min_length=8).encode("ds"))
+    repo.save_metrics([
+        DailyAccessMetrics(
+            ByCountry={
+                "IN":10,
+            },
+            ShortURL="stdBZ9Ll98",
+            TotalHits=5,
+            ByReferrer={
+                "twitter.com":10,
+            },
+            ByDeviceType={
+                "desktop": 1
+            },
+            Day=datetime.date.today().strftime("%Y-%m-%d"),
+        ),
+        DailyAccessMetrics(
+            ByCountry={
+                "IN":10,
+            },
+            ShortURL="stdBZ9Ll98",
+            TotalHits=5,
+            ByReferrer={
+                "twitter.com":10,
+            },
+            ByDeviceType={
+                "desktop": 1
+            },
+            Day= "2026-01-25"
         )
-    except ValidationError as v:
-        errs = v.errors(include_input=True, include_url=True, include_context=True)
-        print(f"error in {err['loc'][0]} - {err['msg']}" for err in errs)
+    ])
+    table = db.Table(DYNAMO_DB_TABLE_NAME)
 
+    # item = table.get_item(Key={
+    #     "PK":"SHORTURL#stdBZ9Ll98",
+    #     "SK":"DAY#2026-01-26"
+    # })["Item"]
+    # x = DailyAccessMetrics(**item)
+    # print(x.by_country["IN"])
 
 
 if __name__ == "__main__":
