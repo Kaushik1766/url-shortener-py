@@ -7,6 +7,7 @@ GET /{short_url} (this would have rate limited access)
 GET /urls (list all urls for the user)
 GET /{short_url}/metrics (only accessible to the creator/admin)
 
+
 Access patterns
 
 PUT user details
@@ -17,8 +18,3 @@ GET url by shorturl
 
 PUT metrics by shorturl
 GET metrics by shorturl
-
-#todos -
-analytics lambda, service, repo
-analytics sqs
-testing

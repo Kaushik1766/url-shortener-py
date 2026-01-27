@@ -47,7 +47,7 @@ class MetricsService:
                     device = DeviceType.MOBILE
                 elif headers.get("CloudFront-Is-SmartTV-Viewer"):
                     device = DeviceType.SMART_TV
-                elif headers.get("CloudFront-Is-Tablet-Viewer"):
+                elif headers.get("CloudFront-Is-Tablet-Viewer") :
                     device = DeviceType.TABLET
                 else:
                     device = DeviceType.DESKTOP

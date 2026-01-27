@@ -19,7 +19,7 @@ subscription_service = SubscriptionService(user_repository)
 
 @exception_boundary
 @requires_auth
-def upgrade_subscription(event: events.APIGatewayProxyEventV2,ctx: context.Context, user: JwtDTO)->APIGatewayProxyResponseV2:
+def upgrade_subscription(event: events.APIGatewayProxyEventV1,ctx: context.Context, user: JwtDTO)->APIGatewayProxyResponseV2:
     updated_jwt = subscription_service.upgrade_subscription(user)
 
     return APIGatewayProxyResponseV2(

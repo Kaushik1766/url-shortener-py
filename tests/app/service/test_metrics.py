@@ -14,7 +14,9 @@ class TestMetricsService(unittest.TestCase):
         self.mock_sqs = MagicMock()
         self.mock_metrics_repo = MagicMock()
         self.mock_url_repo = MagicMock()
-        self.service = MetricsService(self.mock_sqs, self.mock_metrics_repo, self.mock_url_repo)
+        self.service = MetricsService(
+            self.mock_sqs, self.mock_metrics_repo, self.mock_url_repo
+        )
 
     def tearDown(self):
         pass
@@ -72,25 +74,30 @@ class TestMetricsService(unittest.TestCase):
                 self.mock_sqs.send_message.reset_mock()
                 self.mock_sqs.send_message.side_effect = case["side_effect"]
                 self.mock_sqs.send_message.return_value = {"MessageId": "1"}
-                
+
                 wrapped = self.service.track_metrics(case["func"])
-                event = {**base_event, "headers": {**base_event["headers"], **case["headers"]}}
-                
+                event = {
+                    **base_event,
+                    "headers": {**base_event["headers"], **case["headers"]},
+                }
+
                 with patch.dict(os.environ, {"QUEUE_URL": "queue"}):
                     if case["raises"]:
                         with self.assertRaises(case["raises"]):
                             wrapped(event)
                     else:
                         self.assertEqual({"ok": True}, wrapped(event))
-                
+
                 self.mock_sqs.send_message.assert_called()
                 call_kwargs = self.mock_sqs.send_message.call_args.kwargs
                 body = json.loads(call_kwargs["MessageBody"])
                 self.assertEqual(case["expect_device"], body["device"])
 
     def test_process_event(self):
-        timestamp = int(datetime.datetime(2023, 1, 1, tzinfo=datetime.timezone.utc).timestamp())
-        
+        timestamp = int(
+            datetime.datetime(2023, 1, 1, tzinfo=datetime.timezone.utc).timestamp()
+        )
+
         cases = [
             {
                 "name": "aggregates and returns failures",
@@ -98,39 +105,45 @@ class TestMetricsService(unittest.TestCase):
                     "Records": [
                         {
                             "messageId": "m1",
-                            "body": json.dumps({
-                                "url": "abc",
-                                "ip": "1.1.1.1",
-                                "timestamp": timestamp,
-                                "referrer": "ref1",
-                                "user_agent": "ua",
-                                "country": "IN",
-                                "device": DeviceType.DESKTOP,
-                            }),
+                            "body": json.dumps(
+                                {
+                                    "url": "abc",
+                                    "ip": "1.1.1.1",
+                                    "timestamp": timestamp,
+                                    "referrer": "ref1",
+                                    "user_agent": "ua",
+                                    "country": "IN",
+                                    "device": DeviceType.DESKTOP,
+                                }
+                            ),
                         },
                         {
                             "messageId": "m2",
-                            "body": json.dumps({
-                                "url": "abc",
-                                "ip": "2.2.2.2",
-                                "timestamp": timestamp,
-                                "referrer": "ref1",
-                                "user_agent": "ua",
-                                "country": "IN",
-                                "device": DeviceType.MOBILE,
-                            }),
+                            "body": json.dumps(
+                                {
+                                    "url": "abc",
+                                    "ip": "2.2.2.2",
+                                    "timestamp": timestamp,
+                                    "referrer": "ref1",
+                                    "user_agent": "ua",
+                                    "country": "IN",
+                                    "device": DeviceType.MOBILE,
+                                }
+                            ),
                         },
                         {
                             "messageId": "m3",
-                            "body": json.dumps({
-                                "url": "abc",
-                                "ip": "3.3.3.3",
-                                "timestamp": timestamp,
-                                "referrer": "ref3",
-                                "user_agent": "ua",
-                                "country": "US",
-                                "device": DeviceType.MOBILE,
-                            }),
+                            "body": json.dumps(
+                                {
+                                    "url": "abc",
+                                    "ip": "3.3.3.3",
+                                    "timestamp": timestamp,
+                                    "referrer": "ref3",
+                                    "user_agent": "ua",
+                                    "country": "US",
+                                    "device": DeviceType.MOBILE,
+                                }
+                            ),
                         },
                     ]
                 },
@@ -144,9 +157,9 @@ class TestMetricsService(unittest.TestCase):
         for case in cases:
             with self.subTest(case["name"]):
                 self.mock_metrics_repo.save_metrics.return_value = case["save_return"]
-                
+
                 result = self.service.process_event(case["event"])
-                
+
                 self.assertEqual(case["expect_result"], result)
                 self.mock_metrics_repo.save_metrics.assert_called_once()
                 metrics = self.mock_metrics_repo.save_metrics.call_args[0][0]
@@ -192,22 +205,24 @@ class TestMetricsService(unittest.TestCase):
             with self.subTest(case["name"]):
                 self.mock_url_repo.get_urls_by_user_id.return_value = case["user_urls"]
                 self.mock_metrics_repo.get_url_metrics.return_value = case["metrics"]
-                
+
                 if case["raises"]:
                     with self.assertRaises(case["raises"]) as ctx:
                         self.service.get_metrics_by_url(
                             url=case["url"],
                             user_id=case["user_id"],
                             start_day="2024-01-01",
-                            end_day="2024-01-02"
+                            end_day="2024-01-02",
                         )
-                    self.assertEqual(case["expect_error_code"], ctx.exception.error_code)
+                    self.assertEqual(
+                        case["expect_error_code"], ctx.exception.error_code
+                    )
                 else:
                     result = self.service.get_metrics_by_url(
                         url=case["url"],
                         user_id=case["user_id"],
                         start_day="2024-01-01",
-                        end_day="2024-01-02"
+                        end_day="2024-01-02",
                     )
                     self.assertEqual(case["expect_result"], result)
 

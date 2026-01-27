@@ -5,7 +5,24 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6d791707-9f4e-4787-a415-697be3344873" name="Changes" comment="get metrics">
+      <change afterPath="$PROJECT_DIR$/hld.jpg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.coverage" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/url-shortener-py.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/url-shortener-py.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/errors/web_errors.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/errors/web_errors.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/lambdas/auth.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/lambdas/auth.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/lambdas/subscription.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/lambdas/subscription.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/lambdas/url_shortener.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/lambdas/url_shortener.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/schema.json" beforeDir="false" afterPath="$PROJECT_DIR$/app/schema.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/service/metrics.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/service/metrics.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/utils/auth_decorator.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/utils/auth_decorator.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/deployment/.coverage" beforeDir="false" afterPath="$PROJECT_DIR$/deployment/.coverage" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pyproject.toml" beforeDir="false" afterPath="$PROJECT_DIR$/pyproject.toml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/routes.txt" beforeDir="false" afterPath="$PROJECT_DIR$/routes.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/app/repository/test_metrics_repo.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/app/repository/test_metrics_repo.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/app/service/test_metrics.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/app/service/test_metrics.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/app/utils/test_timer.py" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -58,46 +75,48 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ASKED_SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;AWS Lambda.[Local] Signup.executor&quot;: &quot;Run&quot;,
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;Python.main.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.MCP Project settings loaded&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
-    &quot;ai.playground.ignore.import.keys.banner.in.settings&quot;: &quot;true&quot;,
-    &quot;com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/mnt/windows/python/url-shortener-py/app/utils&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;editor.preferences.appearance&quot;,
-    &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "AWS Lambda.[Local] Signup.executor": "Run",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "Python tests.Python tests in PyCharm 2025.3.1.executor": "Run",
+    "Python tests.Python tests in test_rate_limiter.py.executor": "Run",
+    "Python.main.executor": "Run",
+    "RunOnceActivity.MCP Project settings loaded": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
+    "ai.playground.ignore.import.keys.banner.in.settings": "true",
+    "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
+    "git-widget-placeholder": "main",
+    "junie.onboarding.icon.badge.shown": "true",
+    "last_opened_file_path": "C:/Users/ksaha/PycharmProjects/url-shortener-py",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyIntegratedToolsModulesConfigurable",
+    "to.speed.mode.migration.done": "true",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\ksaha\PycharmProjects\url-shortener-py" />
       <recent name="$PROJECT_DIR$/app/utils" />
       <recent name="$PROJECT_DIR$/app/service" />
       <recent name="$PROJECT_DIR$/app/repository" />
       <recent name="$PROJECT_DIR$/app/models" />
-      <recent name="$PROJECT_DIR$/app/dtos" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/app/repository" />
       <recent name="$PROJECT_DIR$/app/utils" />
     </key>
   </component>
-  <component name="RunManager" selected="AWS Lambda.[Local] Signup">
+  <component name="RunManager" selected="Python tests.Python tests in PyCharm 2025.3.1">
     <configuration name="main" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="url-shortener-py" />
       <option name="ENV_FILES" value="" />
@@ -153,8 +172,86 @@
       </sam>
       <method v="2" />
     </configuration>
+    <configuration name="Python tests in PyCharm 2025.3.1" type="tests" factoryName="Autodetect" nameIsGenerated="true">
+      <module name="url-shortener-py" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="SDK_NAME" value="uv (url-shortener-py)" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <EXTENSION ID="software.aws.toolkits.jetbrains.core.execution.PythonAwsConnectionExtension">
+        <option name="credential" />
+        <option name="region" />
+        <option name="useCurrentConnection" value="false" />
+      </EXTENSION>
+      <option name="RUN_TOOL" value="true" />
+      <option name="_new_additionalArguments" value="&quot;&quot;" />
+      <option name="_new_target" value="&quot;&quot;" />
+      <option name="_new_targetType" value="&quot;PATH&quot;" />
+      <method v="2" />
+    </configuration>
+    <configuration name="Python tests in test_rate_limiter.py" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
+      <module name="url-shortener-py" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <EXTENSION ID="software.aws.toolkits.jetbrains.core.execution.PythonAwsConnectionExtension">
+        <option name="credential" />
+        <option name="region" />
+        <option name="useCurrentConnection" value="false" />
+      </EXTENSION>
+      <option name="RUN_TOOL" value="true" />
+      <option name="_new_additionalArguments" value="&quot;&quot;" />
+      <option name="_new_target" value="&quot;$PROJECT_DIR$/tests/app/service/test_rate_limiter.py&quot;" />
+      <option name="_new_targetType" value="&quot;PATH&quot;" />
+      <method v="2" />
+    </configuration>
+    <configuration name="pytest in PyCharm 2025.3.1" type="tests" factoryName="py.test" nameIsGenerated="true">
+      <module name="url-shortener-py" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="SDK_NAME" value="uv (url-shortener-py)" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <EXTENSION ID="software.aws.toolkits.jetbrains.core.execution.PythonAwsConnectionExtension">
+        <option name="credential" />
+        <option name="region" />
+        <option name="useCurrentConnection" value="false" />
+      </EXTENSION>
+      <option name="RUN_TOOL" value="true" />
+      <option name="_new_keywords" value="&quot;&quot;" />
+      <option name="_new_parameters" value="&quot;&quot;" />
+      <option name="_new_additionalArguments" value="&quot;&quot;" />
+      <option name="_new_target" value="&quot;&quot;" />
+      <option name="_new_targetType" value="&quot;PATH&quot;" />
+      <method v="2" />
+    </configuration>
+    <list>
+      <item itemvalue="AWS Lambda.[Local] Signup" />
+      <item itemvalue="Python.main" />
+      <item itemvalue="Python tests.Python tests in PyCharm 2025.3.1" />
+      <item itemvalue="Python tests.Python tests in test_rate_limiter.py" />
+      <item itemvalue="Python tests.pytest in PyCharm 2025.3.1" />
+    </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Python tests.Python tests in test_rate_limiter.py" />
         <item itemvalue="AWS Lambda.[Local] Signup" />
         <item itemvalue="Python.main" />
       </list>
@@ -300,6 +397,7 @@
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/url_shortener_py$main.coverage" NAME="main Coverage Results" MODIFIED="1769160086141" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/url_shortener_py$.coverage" NAME=" Coverage Results" MODIFIED="1769503565687" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
   </component>
   <component name="github-copilot-workspace">
     <instructionFileLocations>

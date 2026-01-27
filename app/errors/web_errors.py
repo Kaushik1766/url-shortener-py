@@ -32,7 +32,7 @@ class WebException(Exception):
         self.message = message
         self.error_code = error_code
 
-def exception_boundary(func: Callable[[events.APIGatewayProxyEventV2, context.Context], APIGatewayProxyResponseV2]):
+def exception_boundary(func: Callable[[events.APIGatewayProxyEventV1, context.Context], APIGatewayProxyResponseV2]):
     @wraps(func)
     def wrapper(*args, **kwargs)->APIGatewayProxyResponseV2:
         try:

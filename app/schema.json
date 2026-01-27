@@ -39,7 +39,6 @@
         "ByReferrer": {
             "<referrer_url>": <number>
         },
-        "TTL": "<timestamp>"
     },
     "Counter": {
         "PK": "SHORTURL",

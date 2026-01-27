@@ -33,7 +33,7 @@ metrics_service = MetricsService(sqs_client, metrics_repository, url_repo)
 
 @exception_boundary
 @requires_auth
-def create_shorturl_handler(event:events.APIGatewayProxyEventV2, ctx: context.Context, user: JwtDTO)-> APIGatewayProxyResponseV2:
+def create_shorturl_handler(event:events.APIGatewayProxyEventV1, ctx: context.Context, user: JwtDTO)-> APIGatewayProxyResponseV2:
     body = event['body']
 
     req = CreateShortURLRequest(**json.loads(body))
@@ -50,7 +50,7 @@ def create_shorturl_handler(event:events.APIGatewayProxyEventV2, ctx: context.Co
 @exception_boundary
 @rate_limiter.rate_limit
 @metrics_service.track_metrics
-def get_url_handler(event:events.APIGatewayProxyEventV2, ctx: context.Context):
+def get_url_handler(event:events.APIGatewayProxyEventV1, ctx: context.Context):
     path_params = event['pathParameters']
 
     print(event.get("headers"))
@@ -65,7 +65,7 @@ def get_url_handler(event:events.APIGatewayProxyEventV2, ctx: context.Context):
 
 @exception_boundary
 @requires_auth
-def get_user_short_urls(event: events.APIGatewayProxyEventV2, ctx: context.Context, user: JwtDTO)->APIGatewayProxyResponseV2:
+def get_user_short_urls(event: events.APIGatewayProxyEventV1, ctx: context.Context, user: JwtDTO)->APIGatewayProxyResponseV2:
     urls = url_service.get_urls_by_user(user.id)
     return APIGatewayProxyResponseV2(
         statusCode=200,

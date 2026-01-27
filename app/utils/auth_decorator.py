@@ -14,7 +14,7 @@ def requires_auth(func):
 
     @wraps(func)
     def wrapper(*args, **kwargs):
-        event  = cast(events.APIGatewayProxyEventV2,kwargs.get('event', args[0]))
+        event  = cast(events.APIGatewayProxyEventV1,kwargs.get('event', args[0]))
 
         headers = event.get('headers')
         if headers is None:

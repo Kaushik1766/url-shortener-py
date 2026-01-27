@@ -43,6 +43,8 @@ class _FakeDB:
 
     def Table(self, name):
         return self._table
+
+
 class TestMetricsRepository(unittest.TestCase):
     def setUp(self):
         self.sample_metric = DailyAccessMetrics(
@@ -109,7 +111,7 @@ class TestMetricsRepository(unittest.TestCase):
                 repo = MetricsRepository(_FakeDB(table))
 
                 result = repo.get_url_metrics("2023-01-01", "2023-01-02", "abc")
-                
+
                 self.assertEqual(case["expect_count"], len(result))
                 if "expect_short_url" in case:
                     self.assertEqual(case["expect_short_url"], result[0].short_url)

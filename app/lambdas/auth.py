@@ -16,7 +16,7 @@ auth_service = AuthService(user_repository)
 
 @log_performance
 @exception_boundary
-def login_handler(event:events.APIGatewayProxyEventV2, ctx: context.Context)->APIGatewayProxyResponseV2:
+def login_handler(event:events.APIGatewayProxyEventV1, ctx: context.Context)->APIGatewayProxyResponseV2:
     body = json.loads(event.get('body',''))
     login_req = LoginRequestDTO(**body)
 
@@ -31,7 +31,7 @@ def login_handler(event:events.APIGatewayProxyEventV2, ctx: context.Context)->AP
 
 @log_performance
 @exception_boundary
-def signup_handler(event: events.APIGatewayProxyEventV2, ctx: context.Context) -> APIGatewayProxyResponseV2:
+def signup_handler(event: events.APIGatewayProxyEventV1, ctx: context.Context) -> APIGatewayProxyResponseV2:
     body = json.loads(event.get('body',""))
     signup_req = SignupRequestDTO(**body)
 
